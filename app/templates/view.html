@@ -1,0 +1,9 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="container-fluid">
+<p> {{ file.name }} </p>
+<p><a href="/download/{{ file.id }}">Скачать файл</a></p>
+<p><strong>Загружен:</strong> {{ file.uploaded|date('d-m-y H:i') }}</p>
+<p><strong>Размер файла:</strong> {{ file.size }} байт</p>
+</div>
+	{% endblock %}
