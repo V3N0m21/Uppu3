@@ -1,11 +1,7 @@
-{% extends 'layout.html' %}
-{% block content %}
-	<div class="container-fluid">
-<p> {{ file.name }} </p>
-<img src="/upload/resize/resize-{{file.name}}">
-<p><a href="/download/{{ file.id }}">Скачать файл</a></p>
-<p><strong>Загружен:</strong> {{ file.uploaded|date('d-m-y H:i') }}</p>
-<p><strong>Разрешение фото:</strong> {{ info.resolution_x }} x {{ info.resolution_y }}</p>
-<p><strong>Размер файла:</strong> {{ file.size }} байт</p>
-</div>
-	{% endblock %}
+
+	<p> {{ file.name }} </p>
+	<img src="{{ helper.formatPreviewLink(file.id,file.name)}}">
+	<p><a href="{{ helper.formatDownloadLink(file.id) }}">Скачать файл</a></p>
+	<p><strong>Загружен:</strong> {{ file.uploaded|date('d-m-y H:i') }}</p>
+	<p><strong>Разрешение фото:</strong> {{ info.resolution_x }} x {{ info.resolution_y }}</p>
+	<p><strong>Размер файла:</strong> {{ helper.formatSize(file.size) }}</p>

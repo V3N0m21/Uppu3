@@ -1,14 +1,10 @@
-{% extends 'layout.html' %}
-{% block content %}
-	<div class="container-fluid border">
-<p> {{ file.name }} </p>
-<video>
-	<source src="upload/{{file.id}}-{{file.name}}-txt">
-</video>
-<p><a href="/download/{{ file.id }}">Скачать файл</a></p>
-<p><strong>Загружен:</strong> {{ file.uploaded|date('d-m-y H:i') }}</p>
-<p><strong>Время проигрывания:</strong> {{ info.playtime }}</p>
-<p><strong>Разрешение видео:</strong> {{ info.resolution_x }} x {{ info.resolution_y }}</p>
-<p><strong>Размер файла:</strong> {{ file.size }} байт</p>
-</div>
-	{% endblock %}
+
+	<p> {{ file.name }} </p>
+	<video>
+		<source src="upload/{{file.id}}-{{file.name}}-txt">
+		</video>
+		<p><a href="/download/{{ file.id }}">Скачать файл</a></p>
+		<p><strong>Загружен:</strong> {{ file.uploaded|date('d-m-y H:i') }}</p>
+		<p><strong>Время проигрывания:</strong> {{ info.playtime }}</p>
+		<p><strong>Разрешение видео:</strong> {{ info.resolution_x }} x {{ info.resolution_y }}</p>
+		<p><strong>Размер файла:</strong> {{ helper.formatSize(file.size) }}</p>

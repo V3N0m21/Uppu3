@@ -1,9 +1,16 @@
 {% extends 'layout.html' %}
 {% block content %}
 <div class="container-fluid">
-<p> {{ file.name }} </p>
-<p><a href="/download/{{ file.id }}">Скачать файл</a></p>
-<p><strong>Загружен:</strong> {{ file.uploaded|date('d-m-y H:i') }}</p>
-<p><strong>Размер файла:</strong> {{ file.size }} байт</p>
+	{% if helper.isPicture(file.extension) == true %}
+      {% include 'view_image.html' %}
+  {% elseif helper.isVideo(file.extension) == true %}
+  		{% include 'view_video.html' %}
+  	{% else %}
+  	<p> {{ file.name }} </p>
+	<p><a href="{{ helper.formatDownloadLink(file.id) }}">Скачать файл</a></p>
+	<p><strong>Загружен:</strong> {{ file.uploaded|date('d-m-y H:i') }}</p>
+	<p><strong>Размер файла:</strong> {{ helper.formatSize(file.size) }}</p>
+	<p>{{ file.extension }}</p>
+{% endif %}
 </div>
-	{% endblock %}
+{% endblock %}

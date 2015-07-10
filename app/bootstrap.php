@@ -5,7 +5,7 @@ use Doctrine\ORM\EntityManager;
 
 $isDevMode = true;
 $config = Setup::createAnnotationMetadataConfiguration(array(__DIR__."/Resource"), $isDevMode);
-
+$config->setQueryCacheImpl(new \Doctrine\Common\Cache\ApcCache());
 $conn = array(
 	'driver' => 'pdo_mysql',
 	'user' => 'user',

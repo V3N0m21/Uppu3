@@ -85,4 +85,18 @@ class FileResource {
 		return json_decode($this->mediainfo);
 	}
 
+	public function saveFile($data)
+	{
+		$this->setName($data['name']);
+		$this->setSize($data['size']);
+		$finfo = new \finfo(FILEINFO_MIME_TYPE);
+		$this->setExtension($finfo->file($data['tmp_name']));
+		#$this->setMediainfo($data['tmp_name']);
+		$this->setComment($_POST['comment']);
+		$mediainfo = \Uppu3\Resource\MediaInfo::getMediaInfo($data['tmp_name']);
+		$mediainfo = json_encode($mediainfo);
+		$this->setMediainfo($mediainfo); 
+		$this->setUploaded(); 
+	}
+
 }

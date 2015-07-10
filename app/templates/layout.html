@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>{% block page_title %} Uppu.ru {% endblock %}</title>
-		<meta charset="utf8" />
-		<link type="text/css" href="../css/bootstrap.min.css" rel="stylesheet" media="screen" type="text/css">
-	</head>
-	<body>
-		<nav class="navbar navbar-inverse">
-			<a class="navbar-brand" href="/">Uppu3</a>
-			<ul class="list-inline nav navbar-nav">
+<head>
+	<title>{% block page_title %} Uppu.ru {% endblock %}</title>
+	<meta charset="utf8">
+	<link type="text/css" href="{{ app.request.getRootUri() }}../css/bootstrap.min.css" rel="stylesheet" media="screen" type="text/css">
+</head>
+<body>
+	<nav class="navbar navbar-inverse">
+		<a class="navbar-brand" href="/">Uppu3</a>
+		<ul class="list-inline nav navbar-nav">
 			<li class="{% if page == 'index' %}active{% endif %}"><a href="/">Главная</a></li>
 			<li class="{% if page == 'list' %}active{% endif %}"><a href="/list">Список файлов</a></li>
 		</ul></nav>
 		{% block content %}
 
-		 {% endblock %}
+		{% endblock %}
 	</body>
-</html>
+	</html>
