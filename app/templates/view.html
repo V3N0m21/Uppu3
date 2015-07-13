@@ -7,7 +7,7 @@
 			{% include 'view_video.html' %}
 			{% else %}
 			<p> {{ file.name }} </p>
-			<p><a href="{{ helper.formatDownloadLink(file.id, file.name)|url_encode }}">Скачать файл</a></p>
+			<p><a href="{{ helper.formatDownloadLink(file.id, file.name)}}">Скачать файл</a></p>
 			<p><strong>Загружен:</strong> {{ file.uploaded|date('d-m-y H:i') }}</p>
 			<p><strong>Размер файла:</strong> {{ helper.formatSize(file.size) }}</p>
 			<p>{{ file.extension }}</p>
