@@ -3,7 +3,7 @@
 	<video>
 		<source src="upload/{{file.id}}-{{file.name}}-txt">
 		</video>
-		<p><a href="{{ helper.formatDownloadLink(file.id, file.name)|url_encode }}">Скачать файл</a></p>
+		<p><a href="{{ helper.formatDownloadLink(file.id, file.name)}}">Скачать файл</a></p>
 		<p><strong>Загружен:</strong> {{ file.uploaded|date('d-m-y H:i') }}</p>
 		<p><strong>Время проигрывания:</strong> {{ info.playtime }}</p>
 		<p><strong>Разрешение видео:</strong> {{ info.resolution_x }} x {{ info.resolution_y }}</p>
