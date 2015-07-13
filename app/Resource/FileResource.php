@@ -17,7 +17,7 @@ class FileResource {
 	protected $comment;
 	/** @Column(type="string") */
 	protected $extension;
-	/** @Column(type="text") */
+	/** @Column(type="json_array") */
 	protected $mediainfo;
 
 	public function getId() 
@@ -82,7 +82,7 @@ class FileResource {
 
 	public function getMediaInfo()
 	{
-		return json_decode($this->mediainfo);
+		return $this->mediainfo;
 	}
 
 	public function saveFile($data)
@@ -94,7 +94,7 @@ class FileResource {
 		#$this->setMediainfo($data['tmp_name']);
 		$this->setComment($_POST['comment']);
 		$mediainfo = \Uppu3\Resource\MediaInfo::getMediaInfo($data['tmp_name']);
-		$mediainfo = json_encode($mediainfo);
+		#$mediainfo = json_encode($mediainfo);
 		$this->setMediainfo($mediainfo); 
 		$this->setUploaded(); 
 	}

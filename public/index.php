@@ -3,10 +3,6 @@ require '../vendor/autoload.php';
 require_once '../app/bootstrap.php';
 use Uppu3\Helper\FormatHelper as FormatHelper;
 
-
-
-
-
 $app = new \Slim\Slim(array(
 	'view' => new \Slim\Views\Twig(),
 	'templates.path' => '../app/templates'
@@ -25,12 +21,12 @@ $app->get('/', function() use ($app) {
 	$page = 'index';
 	$flash = '';
 	$app->render('file_load.html', array('page' => $page,
-										 'flash' => $flash));
+		'flash' => $flash));
 
 });
 
 $app->get('/uri', function() use ($app) {
-    $resize = new \Uppu3\Helper\Resize;
+	$resize = new \Uppu3\Helper\Resize;
 
 });
 $app->post('/', function() use ($app) {
@@ -68,35 +64,22 @@ $app->get('/view/:id/', function($id) use ($app) {
 	}
 	$helper = new FormatHelper();
 	$info = $file->getMediainfo();
-	$pictures = array('image/jpeg','image/gif','image/png');
-	$video = array('video/webm', 'video/mp4');
 	$app->render('view.html', array('file' => $file,
-									'info' => $info,
-									'helper' => $helper));
-// 	if (in_array($file->getExtension(), $pictures)){
-// 	$app->render('view_image.html', array('file' => $file,
-// 												'info' => $info,
-// 											   'helper' => $helper));
-
-// } elseif (in_array($file->getExtension(), $video)) {
-// 	$app->render('view_video.html', array('file' => $file,
-// 											   'info' => $info,
-// 											   'helper' => $helper));
-// } else {
-// 	$app->render('view.html', array('file' => $file,
-// 										 'helper' => $helper));
-// }
+		'info' => $info,
+		'helper' => $helper));
 });
 
-$app->get('/download/:id', function($id) use ($app) {
+$app->get('/download/:id/:name', function($id, $name) use ($app) {
 	$file = $app->em->find('Uppu3\Resource\FileResource', $id);
 	$name = FormatHelper::formatDownloadFile($id, $file->getName());
+	
 	if (file_exists($name)) {
 		header("X-Sendfile:".realpath(dirname(__FILE__)).'/'.$name);
 		header("Content-Type: application/octet-stream");
-		header("Content-Disposition: attachment; filename=".$file->getName());
+		header("Content-Disposition: attachment");
 		exit;
 	} else {
+		
 		$app->notFound();
 	}
 });
@@ -109,8 +92,8 @@ $app->get('/list', function() use ($app) {
 	->createQuery('SELECT g FROM Uppu3\Resource\FileResource g ORDER BY g.uploaded DESC')
 	->getResult();
 	$app->render('list.html', array('files' => $files,
-										 'page' => $page,
-										 'helper' => $helper));
+		'page' => $page,
+		'helper' => $helper));
 });
 
 $app->run();

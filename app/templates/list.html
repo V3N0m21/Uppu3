@@ -1,17 +1,17 @@
 {% extends 'layout.html' %}
 {% block content %}
-<div class="container-fluid">
-	<ul class="list-group">
-		{% for file in files %}
-		<li class="list-group-item">
-			<p><a href="/view/{{ file.id }}">{{ file.name }}</a> загружен {{ file.uploaded|date('y-m-d h:i') }}</p>
-			<p><strong>Комментарий пользователя:</strong>   {{ file.comment }}</p>
-			<p><strong>Размер файла:</strong>  {{ helper.formatSize(file.size) }}</p>
-		</li>
-		{% else %}
-		<p>There are currently no files.</p>
-		
-		{% endfor %}
-	</ul>
-</div>
+	<div class="container-fluid">
+		<ul class="list-group">
+			{% for file in files %}
+				<li class="list-group-item">
+					<p><a href="/view/{{ file.id }}">{{ file.name }}</a> загружен {{ file.uploaded|date('y-m-d h:i') }}</p>
+					<p><strong>Комментарий пользователя:</strong>   {{ file.comment }}</p>
+					<p><strong>Размер файла:</strong>  {{ helper.formatSize(file.size) }}</p>
+				</li>
+				{% else %}
+				<p>There are currently no files.</p>
+				
+			{% endfor %}
+		</ul>
+	</div>
 {% endblock %}
