@@ -17,7 +17,7 @@ class FileResource {
 	protected $comment;
 	/** @Column(type="string") */
 	protected $extension;
-	/** @Column(type="json_array") */
+	/** @Column(type="mediainfotype") */
 	protected $mediainfo;
 
 	public function getId() 
@@ -85,18 +85,18 @@ class FileResource {
 		return $this->mediainfo;
 	}
 
-	public function saveFile($data)
-	{
-		$this->setName($data['name']);
-		$this->setSize($data['size']);
-		$finfo = new \finfo(FILEINFO_MIME_TYPE);
-		$this->setExtension($finfo->file($data['tmp_name']));
-		#$this->setMediainfo($data['tmp_name']);
-		$this->setComment($_POST['comment']);
-		$mediainfo = \Uppu3\Resource\MediaInfo::getMediaInfo($data['tmp_name']);
-		#$mediainfo = json_encode($mediainfo);
-		$this->setMediainfo($mediainfo); 
-		$this->setUploaded(); 
-	}
+	// public function saveFile($data)
+	// {
+	// 	$this->setName($data['name']);
+	// 	$this->setSize($data['size']);
+	// 	$finfo = new \finfo(FILEINFO_MIME_TYPE);
+	// 	$this->setExtension($finfo->file($data['tmp_name']));
+	// 	#$this->setMediainfo($data['tmp_name']);
+	// 	$this->setComment($_POST['comment']);
+	// 	$mediainfo = \Uppu3\Resource\MediaInfo::getMediaInfo($data['tmp_name']);
+	// 	#$mediainfo = json_encode($mediainfo);
+	// 	$this->setMediainfo($mediainfo); 
+	// 	$this->setUploaded(); 
+	// }
 
 }

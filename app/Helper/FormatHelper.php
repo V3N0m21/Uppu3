@@ -4,13 +4,13 @@ class FormatHelper
 {
 	static public function formatSize($bytes)
 	{
-		if ($bytes >= 1073741824)
+		if ($bytes >= 1024*1024*1024)
 		{
-			$bytes = number_format($bytes / 1073741824, 2) . ' GB';
+			$bytes = number_format($bytes / (1024*1024*1024), 2) . ' GB';
 		}
-		elseif ($bytes >= 1048576)
+		elseif ($bytes >= 1024*1024)
 		{
-			$bytes = number_format($bytes / 1048576, 2) . ' MB';
+			$bytes = number_format($bytes / (1024*1024), 2) . ' MB';
 		}
 		elseif ($bytes >= 1024)
 		{

@@ -10,38 +10,42 @@ class Resize {
 	public function resizeFile($fileName, $path)
 	{
 		if (!$this->image = $this->openImage($fileName)) {
-			throw new Exception("File not an image", 1);
+			throw new Exception("File '$fileName' not an image", 1);
 			
 		} else{
 
-		$this->width = imagesx($this->image);
-		$this->height = imagesy($this->image);
+			$this->width = imagesx($this->image);
+			$this->height = imagesy($this->image);
 
-		$this->resizeImage(150,150);
-		$this->saveImage($path, 80);
+			$this->resizeImage(150,150);
+			$this->saveImage($path, 80);
 		}
 	}
 
 	private function openImage($file)
 	{
 		$img = getimagesize($file);
-		$this->mime = $img['mime'];
+		if (!$img) {
+			$img = false;
+		} else {
+			$this->mime = $img['mime'];
 
-		switch($this->mime)
-		{
-			case 'image/jpeg':
+			switch($this->mime)
+			{
+				case 'image/jpeg':
 				$img = @imagecreatefromjpeg($file);
 				break;
-			case 'image/gif':
+				case 'image/gif':
 				$img = @imagecreatefromgif($file);
 				break;
-			case 'image/png':
+				case 'image/png':
 				$img = @imagecreatefrompng($file);
 				break;
-			default:
+				default:
 				$img = false;
 				break;
 
+			}
 		}
 		return $img;
 	}
@@ -64,10 +68,10 @@ class Resize {
 	private function getDimensions($newWidth, $newHeight)
 	{
 		
-				$optionArray = $this->getSizeByAuto($newWidth, $newHeight);
-				$optimalWidth = $optionArray['optimalWidth'];
-				$optimalHeight = $optionArray['optimalHeight'];
-			
+		$optionArray = $this->getSizeByAuto($newWidth, $newHeight);
+		$optimalWidth = $optionArray['optimalWidth'];
+		$optimalHeight = $optionArray['optimalHeight'];
+
 		return array('optimalWidth' => $optimalWidth, 'optimalHeight' => $optimalHeight);
 	}
 
@@ -115,45 +119,45 @@ class Resize {
 	}
 
 	
-private function saveImage($savePath, $imageQuality="100")
-{
+	private function saveImage($savePath, $imageQuality="100")
+	{
 		switch($this->mime)
-    {
-        case 'image/jpeg':
-            if (imagetypes() & IMG_JPG) {
-                imagejpeg($this->imageResized, $savePath, $imageQuality);
-            } else {
-            	throw new Exception("File not created", 1);
-            }
-            break;
- 
-        case 'image/gif':
-            if (imagetypes() & IMG_GIF) {
-                imagegif($this->imageResized, $savePath);
-            } else {
-            	throw new Exception("File not created", 1);
-            }
-            break;
- 
-        case 'image/png':
+		{
+			case 'image/jpeg':
+			if (imagetypes() & IMG_JPG) {
+				imagejpeg($this->imageResized, $savePath, $imageQuality);
+			} else {
+				throw new Exception("File '$savePath' not created", 1);
+			}
+			break;
+
+			case 'image/gif':
+			if (imagetypes() & IMG_GIF) {
+				imagegif($this->imageResized, $savePath);
+			} else {
+				throw new Exception("File '$savePath' not created", 1);
+			}
+			break;
+
+			case 'image/png':
             // *** Scale quality from 0-100 to 0-9
-            $scaleQuality = round(($imageQuality/100) * 9);
- 
+			$scaleQuality = round(($imageQuality/100) * 9);
+
             // *** Invert quality setting as 0 is best, not 9
-            $invertScaleQuality = 9 - $scaleQuality;
- 
-            if (imagetypes() & IMG_PNG) {
-                imagepng($this->imageResized, $savePath, $invertScaleQuality);
-            } else {
-            	throw new Exception("File not created", 1);
-            }
-            break;
- 
-        default:
-           throw new Exception("File not an image", 1);
-            break;
-    }
- 
-    imagedestroy($this->imageResized);
-}
+			$invertScaleQuality = 9 - $scaleQuality;
+
+			if (imagetypes() & IMG_PNG) {
+				imagepng($this->imageResized, $savePath, $invertScaleQuality);
+			} else {
+				throw new Exception("File '$savePath' not created", 1);
+			}
+			break;
+
+			default:
+			throw new Exception("File '$savePath' not an image", 1);
+			break;
+		}
+
+		imagedestroy($this->imageResized);
+	}
 }

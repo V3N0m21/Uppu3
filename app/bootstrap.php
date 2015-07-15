@@ -2,10 +2,16 @@
 
 use Doctrine\ORM\Tools\Setup;
 use Doctrine\ORM\EntityManager;
+use Doctrine\DBAL\Types\Type;
 
 $isDevMode = true;
 $config = Setup::createAnnotationMetadataConfiguration(array(__DIR__."/Resource"), $isDevMode);
-$config->setQueryCacheImpl(new \Doctrine\Common\Cache\ApcCache());
+if (extension_loaded('apc')) {
+	$config->setQueryCacheImpl(new \Doctrine\Common\Cache\ApcCache());
+} else {
+	$config->setQueryCacheImpl(new \Doctrine\Commmon\Cache\MemcacheCache());
+}
+
 $conn = array(
 	'driver' => 'pdo_mysql',
 	'user' => 'user',
@@ -16,3 +22,4 @@ $conn = array(
 		)
 	);
 $entityManager = EntityManager::create($conn, $config);
+Type::addType('mediainfotype', 'Uppu3\Resource\MediaInfoType');

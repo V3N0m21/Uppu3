@@ -1,9 +1,9 @@
 {% extends 'layout.html' %}
 {% block content %}
 	<div class="container-fluid">
-		{% if helper.isPicture(file.extension) == true %}
+		{% if helper.isPicture(file.extension)%}
 			{% include 'view_image.html' %}
-			{% elseif helper.isVideo(file.extension) == true %}
+			{% elseif helper.isVideo(file.extension)%}
 			{% include 'view_video.html' %}
 			{% else %}
 			<p> {{ file.name }} </p>
