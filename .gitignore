@@ -23,6 +23,7 @@ composer.phar
 
 public/upload/
 vendor/
+.idea/
  
 # Logs and databases #
 ######################
