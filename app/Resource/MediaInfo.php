@@ -41,9 +41,10 @@ class MediaInfo
         return $mediaInfo;
     }
 
-    static public function setMediaInfo(MediaInfo $mediaInfo, $finfo)
+    static public function setMediaInfo($finfo)
     {
-       
+       $mediaInfo = new self;
+
        if (isset($finfo->resolution_x)) {
 
             $mediaInfo->resolution_x = $finfo->resolution_x;

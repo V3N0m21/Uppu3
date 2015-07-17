@@ -12,5 +12,25 @@
 			<p><strong>Размер файла:</strong> {{ helper.formatSize(file.size) }}</p>
 			<p>{{ file.extension }}</p>
 		{% endif %}
+			<h4>Post Your Comment:</h4>
+			<form action="/send/{{ file.id }}" method="post">
+				<label for="name">Ваше имя</label><br>
+				<input type='text' name="name"><br>
+				<label for="comment">Your Comment</label><br>
+				<textarea name="comment"></textarea><br>
+				<input type="hidden" name="fileId" value="{{ file.id }}">
+				<input type="submit" value="Post your comment">
+			</form>
+		<div class="comment" style="border:1px solid black; background:#cccccc; width:50%; padding:20px; margin-top:15px;">
+		{% for comment in comments %}
+			<div style="border: 1px solid black; background:black; color:gold; padding:5px;margin:5px;">
+			<p>Comment by {{ comment.user }} posted on {{ comment.posted|date('d-m-y H:i')  }}</p>
+			<p><i>{{ comment.user }} wrote:</i></p>
+			<p style="color:green">> {{ comment.comment }}</p>
+			</div>
+		{% endfor %}
+			
+			
+			</div>
 	</div>
 {% endblock %}

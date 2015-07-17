@@ -2,6 +2,7 @@
 require '../vendor/autoload.php';
 require_once '../app/bootstrap.php';
 use Uppu3\Helper\FormatHelper as FormatHelper;
+use Uppu3\Resource\Comments as Comments;
 
 $app = new \Slim\Slim(array(
 	'view' => new \Slim\Views\Twig(),
@@ -47,10 +48,13 @@ $app->get('/view/:id/', function($id) use ($app) {
 		$app->notFound();
 	}
 	$helper = new FormatHelper();
+	$comments = $app->em->getRepository('Uppu3\Resource\Comments')
+	->findBy(array('fileId' => $id), array('posted' => 'DESC'));
 	$info = $file->getMediainfo();
 	$app->render('view.html', array('file' => $file,
 		'info' => $info,
-		'helper' => $helper));
+		'helper' => $helper,
+		'comments' => $comments));
 });
 
 
@@ -77,6 +81,22 @@ $app->get('/list', function() use ($app) {
 	$app->render('list.html', array('files' => $files,
 		'page' => $page,
 		'helper' => $helper));
+});
+
+$app->get('/test', function() use ($app) {
+
+	$comment = new Comments();
+	$comment->setUser('Food');
+	$comment->setComment('test');
+	$comment->setPosted();
+	$app->em->persist($comment);
+	$app->em->flush();
+	echo $comment->getId();
+});
+
+$app->post('/send/:id', function($id) use ($app) {
+	Comments::saveComment($_POST, $app->em);
+	$app->redirect("/view/$id");
 });
 
 $app->run();

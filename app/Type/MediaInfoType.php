@@ -1,4 +1,4 @@
-<?php namespace Uppu3\Resource;
+<?php namespace Uppu3\Type;
 
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
@@ -11,8 +11,7 @@ class MediaInfoType extends Type
     {
         
         $info = json_decode($info);
-        $mediaInfo = new MediaInfo;
-        $mediaInfo = $mediaInfo->setMediaInfo($mediaInfo, $info);
+        $mediaInfo = \Uppu3\Resource\MediaInfo::setMediaInfo($info);
         return $mediaInfo;
     }
 
@@ -24,7 +23,7 @@ class MediaInfoType extends Type
 
     public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
     {
-        // return the SQL used to create your column type. To create a portable column type, use the $platform.
+        return $platform->getJsonTypeDeclarationSQL($fieldDeclaration);
     }
 
     public function getName()
