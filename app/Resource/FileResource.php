@@ -1,23 +1,22 @@
 <?php namespace Uppu3\Resource;
-/**
-* @Entity @Table(name="files")
-*/
+use Doctrine\ORM\Mapping as ORM;
+/** @ORM\Entity @ORM\Table(name="files") */
 
 
 class FileResource {
-	/** @Id @Column(type="integer") @GeneratedValue */
+	/** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
 	protected $id;
-	/** @Column(type="string") */
+	/** @ORM\Column(type="string") */
 	protected $name;
-	/** @Column(type="integer") */
+	/** @ORM\Column(type="integer") */
 	protected $size;
-	/** @Column(type="datetime") */
+	/** @ORM\Column(type="datetime") */
 	protected $uploaded;
-	/** @Column(type="string") */
+	/** @ORM\Column(type="string") */
 	protected $comment;
-	/** @Column(type="string") */
+	/** @ORM\Column(type="string") */
 	protected $extension;
-	/** @Column(type="mediainfotype") */
+	/** @ORM\Column(type="mediainfotype") */
 	protected $mediainfo;
 
 	public function getId() 

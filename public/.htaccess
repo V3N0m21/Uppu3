@@ -10,6 +10,7 @@ RewriteEngine On
  php_value post_max_size 100M
  php_value upload_max_filesize 100M
 
+
 RewriteRule ^download/[^/]+/[^/]+$ index.php
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-f

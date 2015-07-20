@@ -15,7 +15,7 @@ class MediaInfoType extends Type
         return $mediaInfo;
     }
 
-    public function convertToDatabaseValue(MediaInfo $mediaInfo)
+    public function convertToDatabaseValue(\Uppu3\Resource\MediaInfo $mediaInfo)
     {
         $mediaInfo = json_encode($mediaInfo);
         return $mediaInfo;

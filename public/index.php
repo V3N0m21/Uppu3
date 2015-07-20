@@ -56,6 +56,10 @@ $app->get('/view/:id/', function($id) use ($app) {
 		'helper' => $helper,
 		'comments' => $comments));
 });
+$app->get('/comment/:id/', function($id) use ($app) {
+	$comment = $app->em->find('Uppu3\Resource\Comments', $id);
+	echo $comment->getComment();
+});
 
 
 $app->get('/download/:id/:name', function($id, $name) use ($app) {
@@ -95,7 +99,14 @@ $app->get('/test', function() use ($app) {
 });
 
 $app->post('/send/:id', function($id) use ($app) {
-	Comments::saveComment($_POST, $app->em);
+	// var_dump($_POST);die();
+	isset($_POST['parent']) ? $parentID = $_POST['parent'] : $parentID = false;
+
+	// var_dump($parentID);die();
+	// $parent = $app->em->find('Uppu3\Resource\Comments', $parentID);
+	$parent = $app->em->find('Uppu3\Resource\Comments', $parentID);
+	// $parent = null;
+	Comments::saveComment($_POST, $app->em, $parent);
 	$app->redirect("/view/$id");
 });
 
