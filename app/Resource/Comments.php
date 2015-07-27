@@ -7,7 +7,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 * @Gedmo\Tree(type="materializedPath")
 */
 class Comments {
-	/** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
+	/** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue @Gedmo\TreePathSource */
 	protected $id;
 	/** 
 	* @ORM\Column(type="string")
@@ -15,7 +15,7 @@ class Comments {
 	*/
 	private $path;
 	/**
-     * @Gedmo\TreePathSource
+     * 
      * @ORM\Column(name="user", type="string", length=64)
      */
     private $user;

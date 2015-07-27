@@ -15,25 +15,28 @@
 			<h4>Post Your Comment:</h4>
 			<form action="/send/{{ file.id }}" method="post">
 				<label for="name">Ваше имя</label><br>
-				<input type='text' name="name"><br>
+				<input type='text' name="name" value="Anonymous"><br>
 				<label for="comment">Your Comment</label><br>
-				<textarea name="comment"></textarea><br>
+				<textarea name="comment" id="commentBody"></textarea><br>
 				<input type="hidden" name="fileId" value="{{ file.id }}">
 				<input type="submit" value="Post your comment">
+                <input type="hidden" id="parentComment" name="parent" value="">
 			
-		<div class="comment" style="border:1px solid black; background:#cccccc; width:50%; padding:20px; margin-top:15px;">
+		<div class="comments">
+            <h3>Комментарии</h3>
 		{% for comment in comments %}
-			<ul>
-                {# {% if comment.level == 1 %} #}
+			<ul style="list-style:none;">
+                <div class="comment"
+                 onclick="document.getElementById('parentComment').value={{ comment.id }};
+                 document.getElementById('commentBody').value='{{comment.user}}, '"
+                 style="margin-left:{{ (comment.level -1) * 25 }}px;">
 				<li>
 			<p>Comment by {{ comment.user }} posted on {{ comment.posted|date('d-m-y H:i')  }}</p>
             <p><i>{{ comment.user }} wrote:</i></p>
             <p>> {{ comment.comment }}</p>
-                <p><input type="radio" name="parent" value="{{ comment.id }}"> {{ comment.id }} </p>
+            <p><span>reply</span></p>
 				</li>
-            {# {% endif %} #}
-                {# <ul>
-                </ul> #}
+                </div>
 			</ul>
 
             </form>
@@ -45,8 +48,6 @@
 			<p style="color:green">> {{ comment.comment }}</p>
 			</div> #}
 		{% endfor %}
-			
-			
-			</div>
+		</div>
 	</div>
 {% endblock %}

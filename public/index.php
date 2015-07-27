@@ -26,8 +26,8 @@ $app->get('/', function() use ($app) {
 
 });
 
-$app->get('/uri', function() use ($app) {
-	$resize = new \Uppu3\Helper\Resize;
+$app->get('/test', function() use ($app) {
+	$app->render('js_test.html');
 
 });
 $app->post('/', function() use ($app) {
@@ -49,7 +49,7 @@ $app->get('/view/:id/', function($id) use ($app) {
 	}
 	$helper = new FormatHelper();
 	$comments = $app->em->getRepository('Uppu3\Resource\Comments')
-	->findBy(array('fileId' => $id), array('posted' => 'DESC'));
+	->findBy(array('fileId' => $id), array('path' => 'ASC'));
 	$info = $file->getMediainfo();
 	$app->render('view.html', array('file' => $file,
 		'info' => $info,

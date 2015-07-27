@@ -13,7 +13,7 @@ if (extension_loaded('apc')) {
 	$cache = new \Doctrine\Commmon\Cache\MemcacheCache();
 }
 $isDevMode = true;
-$config = Setup::createAnnotationMetadataConfiguration(array(__DIR__."/Resource"), $isDevMode);
+//$config = Setup::createAnnotationMetadataConfiguration(array(__DIR__."/Resource"), $isDevMode); !!!!!!
 $annotationReader = new Doctrine\Common\Annotations\AnnotationReader;
 $cachedAnnotationReader = new Doctrine\Common\Annotations\CachedReader(
     $annotationReader, // use reader

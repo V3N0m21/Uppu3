@@ -1,0 +1,35 @@
+.comment:hover {
+	background-color: #cccccc;
+
+}
+.comment {
+	position:relative;
+	border: 1px solid black;
+	background: rgba(20,20,20,0.1);
+	border-radius: 15px;
+	padding: 10px;
+	width:450px;
+
+}
+.comment span {
+	position:absolute;
+	float:left;
+	display:none;
+}
+
+.comment:hover span {
+	position:absolute;
+	color:grey;
+	font-style: italic;
+	text-decoration: underline;
+	top: 40%;
+	left:105%;
+	float:left;
+	display:block;
+
+}
+
+.comments{
+
+	margin-top: 50px;
+};
