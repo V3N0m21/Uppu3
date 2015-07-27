@@ -3,8 +3,8 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Jul 10, 2015 at 11:07 AM
--- Server version: 5.5.43-0ubuntu0.14.04.1
+-- Generation Time: Jul 27, 2015 at 12:28 PM
+-- Server version: 5.5.44-0ubuntu0.14.04.1
 -- PHP Version: 5.5.9-1ubuntu4.11
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -28,11 +28,11 @@ SET time_zone = "+00:00";
 
 CREATE TABLE IF NOT EXISTS `files` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) DEFAULT NULL,
-  `size` int(11) DEFAULT NULL,
-  `uploaded` datetime DEFAULT NULL,
+  `name` varchar(255) NOT NULL,
+  `size` int(11) NOT NULL,
+  `uploaded` datetime NOT NULL,
   `comment` varchar(255) DEFAULT NULL,
-  `extension` varchar(25) DEFAULT NULL,
+  `extension` varchar(25) NOT NULL,
   `mediainfo` text NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
