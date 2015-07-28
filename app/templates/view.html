@@ -12,7 +12,7 @@
 			<p><strong>Размер файла:</strong> {{ helper.formatSize(file.size) }}</p>
 			<p>{{ file.extension }}</p>
 		{% endif %}
-			<h4>Post Your Comment:</h4>
+			{# <h4>Post Your Comment:</h4>
 			<form action="/send/{{ file.id }}" method="post">
 				<label for="name">Ваше имя</label><br>
 				<input type='text' name="name" value="Anonymous"><br>
@@ -20,26 +20,31 @@
 				<textarea name="comment" id="commentBody"></textarea><br>
 				<input type="hidden" name="fileId" value="{{ file.id }}">
 				<input type="submit" value="Post your comment">
-                <input type="hidden" id="parentComment" name="parent" value="">
+                <input type="hidden" id="parentComment" name="parent" value=""> #}
 			
 		<div class="comments">
             <h3>Комментарии</h3>
-		{% for comment in comments %}
-			<ul style="list-style:none;">
-                <div class="comment"
-                 onclick="document.getElementById('parentComment').value={{ comment.id }};
-                 document.getElementById('commentBody').value='{{comment.user}}, '"
+            
+	  {% for comment in comments %}
+			
+
+                <div class="comment" id="comment{{comment.id}}"
+                 {# onclick="document.getElementById('parentComment').value={{ comment.id }};
+                 document.getElementById('commentBody').value='{{comment.user}}, '" #}
+                 onclick="postForm{{comment.id}}.appendChild(div);
+                 parentComment.value={{ comment.id }};
+                 "
                  style="margin-left:{{ (comment.level -1) * 25 }}px;">
+                 <ul style="list-style:none;">
 				<li>
 			<p>Comment by {{ comment.user }} posted on {{ comment.posted|date('d-m-y H:i')  }}</p>
             <p><i>{{ comment.user }} wrote:</i></p>
             <p>> {{ comment.comment }}</p>
             <p><span>reply</span></p>
 				</li>
-                </div>
+              
 			</ul>
 
-            </form>
 			{# {% if  %} #}
 			{# <div style="border: 1px solid black; background:black; color:gold; padding:5px;margin:5px;">
 			<p>Parent {{ comment.id }}</p>
@@ -47,7 +52,31 @@
 			<p><i>{{ comment.user }} wrote:</i></p>
 			<p style="color:green">> {{ comment.comment }}</p>
 			</div> #}
+            </div>
+            <div id='postForm{{comment.id}}'></div>
 		{% endfor %}
+         
+        <div class="comment-button" id="commentButton">
+            <h4>Нажмите чтоб написать комментарий</h4>
+            </div>
 		</div>
 	</div>
+    <script type="text/javascript">
+        var div =  document.createElement('div');
+        div.className = "post-form";
+        div.innerHTML = '<h4><b> Ответить: </b></h4>' +
+        '<form action="/send/{{ file.id }}" method="post">'+
+        '<label for="name">Ваше имя</label><br>'+
+        '<input type="text" name="name" value="Anonymous"><br>'+
+        '<label for="comment">Your Comment</label><br>'+
+        '<textarea name="comment" id="commentBody"></textarea><br>'+
+        '<input type="hidden" name="fileId" value="{{ file.id }}">'+
+        '<input type="submit" value="Post your comment">'+
+        '<input type="hidden" id="parentComment" name="parent" value="{{ comment.id }}">'+
+        '</form>'
+        commentButton.onclick = function(){
+            commentButton.appendChild(div);
+            commentButton.hidden(commentButton.querySelector('h4'))
+        }
+    </script>
 {% endblock %}

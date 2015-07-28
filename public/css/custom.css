@@ -8,9 +8,11 @@
 	background: rgba(20,20,20,0.1);
 	border-radius: 15px;
 	padding: 10px;
-	width:450px;
+	width:35%;
+	margin-top:15px;
 
 }
+
 .comment span {
 	position:absolute;
 	float:left;
@@ -32,4 +34,14 @@
 .comments{
 
 	margin-top: 50px;
-};
+}
+.comment-button{
+	margin-top: 20px;
+}
+
+.comment-button>h4:hover {
+	color:#cccccc;
+}
+.post-form {
+	border-top: 1px solid black;
+}
