@@ -33,6 +33,7 @@
                  document.getElementById('commentBody').value='{{comment.user}}, '" #}
                  onclick="postForm{{comment.id}}.appendChild(div);
                  parentComment.value={{ comment.id }};
+                 commentButton.style.display = '';
                  "
                  style="margin-left:{{ (comment.level -1) * 25 }}px;">
                  <ul style="list-style:none;">
@@ -59,8 +60,11 @@
         <div class="comment-button" id="commentButton">
             <h4>Нажмите чтоб написать комментарий</h4>
             </div>
+            <div id="commentButtonPost">
+            </div>
 		</div>
 	</div>
+
     <script type="text/javascript">
         var div =  document.createElement('div');
         div.className = "post-form";
@@ -75,8 +79,8 @@
         '<input type="hidden" id="parentComment" name="parent" value="{{ comment.id }}">'+
         '</form>'
         commentButton.onclick = function(){
-            commentButton.appendChild(div);
-            commentButton.hidden(commentButton.querySelector('h4'))
+            commentButtonPost.appendChild(div);
+            commentButton.style.display = "none"
         }
     </script>
 {% endblock %}

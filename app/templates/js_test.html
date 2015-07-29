@@ -7,7 +7,7 @@
 
 <body>
   <div>Пользователи:</div>
-  <ul>
+  <ul id="list">
     <li>Маша</li>
     <li>Вовочка</li>
   </ul>
@@ -15,10 +15,11 @@
   <!-- комментарий -->
 
   <script>
-    elem = document.head
-    elem2 = document.body.children[1]
-    elem3 = elem2.children[1]
-    alert(elem3.innerHTML)
+    while (true) {
+        alert(list)
+        var li = prompt('your item');
+        list.appendChild(li);
+    }
   </script>
 
 </body>
