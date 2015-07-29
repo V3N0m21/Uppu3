@@ -29,12 +29,7 @@
 			
 
                 <div class="comment" id="comment{{comment.id}}"
-                 {# onclick="document.getElementById('parentComment').value={{ comment.id }};
-                 document.getElementById('commentBody').value='{{comment.user}}, '" #}
-                 onclick="postForm{{comment.id}}.appendChild(div);
-                 parentComment.value={{ comment.id }};
-                 commentButton.style.display = '';
-                 "
+                 onclick="appendPostForm({{comment.id}}, '{{comment.user}}', postForm{{comment.id}})"
                  style="margin-left:{{ (comment.level -1) * 25 }}px;">
                  <ul style="list-style:none;">
 				<li>
@@ -66,6 +61,13 @@
 	</div>
 
     <script type="text/javascript">
+        function appendPostForm(id, user, postForm) {
+                 postForm.appendChild(div);
+                 parentComment.value= id;
+                 commentButton.style.display = '';
+                 commentBody.value = user;
+        }
+
         var div =  document.createElement('div');
         div.className = "post-form";
         div.innerHTML = '<h4><b> Ответить: </b></h4>' +
@@ -80,7 +82,8 @@
         '</form>'
         commentButton.onclick = function(){
             commentButtonPost.appendChild(div);
-            commentButton.style.display = "none"
+            commentButton.style.display = "none";
+            commentBody.value = ''
         }
     </script>
 {% endblock %}
