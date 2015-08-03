@@ -32,8 +32,9 @@ class File {
 			$path = \Uppu3\Helper\FormatHelper::formatUploadResizeLink($id, $data['load']['name']);
 			$resize = new \Uppu3\Helper\Resize;
 			$resize->resizeFile($newFile, $path);	
-
-			return $fileResource;
 		}
+			
+			return $fileResource;
+		
 	}
 }

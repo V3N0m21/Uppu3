@@ -65,15 +65,15 @@
                  postForm.appendChild(div);
                  parentComment.value= id;
                  commentButton.style.display = '';
-                 commentBody.value = user;
+                 commentBody.value = user+ ', ';
         }
 
         var div =  document.createElement('div');
         div.className = "post-form";
         div.innerHTML = '<h4><b> Ответить: </b></h4>' +
         '<form action="/send/{{ file.id }}" method="post">'+
-        '<label for="name">Ваше имя</label><br>'+
-        '<input type="text" name="name" value="Anonymous"><br>'+
+        '<label for="name">Ваше имя:</label>'+
+        '<input type="text" name="name" onfocus="this.value=\'\'" value="Anonymous"><br>'+
         '<label for="comment">Your Comment</label><br>'+
         '<textarea name="comment" id="commentBody"></textarea><br>'+
         '<input type="hidden" name="fileId" value="{{ file.id }}">'+
