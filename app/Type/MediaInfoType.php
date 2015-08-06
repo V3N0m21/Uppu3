@@ -11,11 +11,11 @@ class MediaInfoType extends Type
     {
         
         $info = json_decode($info);
-        $mediaInfo = \Uppu3\Resource\MediaInfo::setMediaInfo($info);
+        $mediaInfo = \Uppu3\Entity\MediaInfo::setMediaInfo($info);
         return $mediaInfo;
     }
 
-    public function convertToDatabaseValue(\Uppu3\Resource\MediaInfo $mediaInfo)
+    public function convertToDatabaseValue(\Uppu3\Entity\MediaInfo $mediaInfo)
     {
         $mediaInfo = json_encode($mediaInfo);
         return $mediaInfo;

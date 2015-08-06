@@ -7,12 +7,14 @@
 	<link type="text/css" href="{{ app.request.getRootUri() }}/css/custom.css" rel="stylesheet" media="screen" type="text/css">
 </head>
 <body>
-	<nav class="navbar navbar-inverse">
+	<nav class="navbar navbar-inverse container-fluid">
 		<a class="navbar-brand" href="/">Uppu3</a>
 		<ul class="list-inline nav navbar-nav">
 			<li class="{% if page == 'index' %}active{% endif %}"><a href="/">Главная</a></li>
 			<li class="{% if page == 'list' %}active{% endif %}"><a href="/list">Список файлов</a></li>
-		</ul></nav>
+		</ul>
+		<a class="btn btn-default navbar-btn navbar-right" href="/register" role="button">Sign up </a>
+		</nav>
 		{% block content %}
 
 		{% endblock %}

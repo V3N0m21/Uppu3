@@ -1,10 +1,12 @@
-<?php namespace Uppu3\Resource;
+<?php namespace Uppu3\Entity;
 use Doctrine\ORM\Mapping as ORM;
 /** @ORM\Entity @ORM\Table(name="files") */
 
 
-class FileResource {
-	/** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
+class File {
+	/** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
+	* @ORM\ManyToMany(targetEntity="Comments", inversedBy="fileId")
+	  */
 	protected $id;
 	/** @ORM\Column(type="string") */
 	protected $name;
@@ -83,19 +85,4 @@ class FileResource {
 	{
 		return $this->mediainfo;
 	}
-
-	// public function saveFile($data)
-	// {
-	// 	$this->setName($data['name']);
-	// 	$this->setSize($data['size']);
-	// 	$finfo = new \finfo(FILEINFO_MIME_TYPE);
-	// 	$this->setExtension($finfo->file($data['tmp_name']));
-	// 	#$this->setMediainfo($data['tmp_name']);
-	// 	$this->setComment($_POST['comment']);
-	// 	$mediainfo = \Uppu3\Resource\MediaInfo::getMediaInfo($data['tmp_name']);
-	// 	#$mediainfo = json_encode($mediainfo);
-	// 	$this->setMediainfo($mediainfo); 
-	// 	$this->setUploaded(); 
-	// }
-
 }

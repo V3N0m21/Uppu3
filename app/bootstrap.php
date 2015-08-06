@@ -32,6 +32,7 @@ Gedmo\DoctrineExtensions::registerAbstractMappingIntoDriverChainORM(
     $cachedAnnotationReader // our cached annotation reader
 );
 $driverChain->addDriver($annotationDriver, 'Uppu3\Resource');
+$driverChain->addDriver($annotationDriver, 'Uppu3\Entity');
 
 $config = new Doctrine\ORM\Configuration;
 $config->setProxyDir(sys_get_temp_dir());

@@ -1,0 +1,23 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+<div class="container-fluid col-md-offset-1">
+	<br>
+	<form action="/register" method="post">
+		<label>Login
+			<input type="text" class="form-control" id="login" name="login" placeholder="Введите имя">
+		</label><br>
+		<label>e-mail
+			<input type="email" class="form-control" id="email" name="email" placeholder="e-mail">
+		</label><br>
+		<label>Password
+			<input type="password" class="form-control" id="password" name="password" placeholder="password">
+		</label><br>
+		<label>Confirm
+			<input type="password" class="form-control" placeholder="password">
+		</label><br><br>
+		<input type="submit" name="submit" class="btn btn-primary" value="Submit" >
+	</form>
+</div>
+
+{% endblock %}

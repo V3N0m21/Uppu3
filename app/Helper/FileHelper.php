@@ -1,13 +1,14 @@
-<?php namespace Uppu3\Resource;
+<?php namespace Uppu3\Helper;
+use Uppu3\Entity\File;
 
 
-class File {
+class FileHelper {
 	
 
 	static public function fileSave($data, $em) 
 	{
 		$pictures = array('image/jpeg','image/gif','image/png');
-		$fileResource = new FileResource;
+		$fileResource = new File;
 		//$fileResource->saveFile($data['load']);
 
 		$fileResource->setName($data['load']['name']);
@@ -16,7 +17,7 @@ class File {
 		$fileResource->setExtension($finfo->file($data['load']['tmp_name']));
 		#$fileResource->setMediainfo($data['load']['tmp_name']);
 		$fileResource->setComment($_POST['comment']);
-		$mediainfo = \Uppu3\Resource\MediaInfo::getMediaInfo($data['load']['tmp_name']);
+		$mediainfo = \Uppu3\Entity\MediaInfo::getMediaInfo($data['load']['tmp_name']);
 		#$mediainfo = json_encode($mediainfo);
 		$fileResource->setMediainfo($mediainfo); 
 		$fileResource->setUploaded(); 

@@ -1,4 +1,4 @@
-<?php namespace Uppu3\Resource;
+<?php namespace Uppu3\Entity;
 
 
 class MediaInfo

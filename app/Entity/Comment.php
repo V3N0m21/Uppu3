@@ -1,4 +1,4 @@
-<?php namespace Uppu3\Resource;
+<?php namespace Uppu3\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 
@@ -6,7 +6,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 * @ORM\Entity @ORM\Table(name="comments")
 * @Gedmo\Tree(type="materializedPath")
 */
-class Comments {
+class Comment {
 	/** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue @Gedmo\TreePathSource */
 	protected $id;
 	/** 
@@ -21,7 +21,7 @@ class Comments {
     private $user;
     /**
      * @Gedmo\TreeParent
-     * @ORM\ManyToOne(targetEntity="Comments", inversedBy="children")
+     * @ORM\ManyToOne(targetEntity="Comment", inversedBy="children")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="parent", referencedColumnName="id", onDelete="CASCADE")
      * })
@@ -34,7 +34,8 @@ class Comments {
     private $level;
 
     /**
-     * @ORM\OneToMany(targetEntity="Comments", mappedBy="parent")
+     * @ORM\OneToMany(targetEntity="Comment", mappedBy="parent")
+     *
      */
     private $children;
 
@@ -43,7 +44,7 @@ class Comments {
 	protected $comment;
 	/** @ORM\Column(type="datetime") */
 	protected $posted;
-	/** @ORM\Column(type="integer") */
+	/** @ORM\Column(type="integer") @ORM\ManyToMany(targetEntity="FileResource", mappedBy="id") */
 	protected $fileId;
 
 	public function getId() 
@@ -82,13 +83,13 @@ class Comments {
 	}
 
 
-	public function setFileId($id)
+	public function setFileId(\Uppu3\Entity\File $file)
 	{
-		$this->fileId = $id;
+		$this->fileId = $file->getId();
 	}
 
 
-        public function setParent(Comments $parent = null)
+        public function setParent(Comment $parent = null)
     {
         $this->parent = $parent;
     }
@@ -118,26 +119,5 @@ class Comments {
 		return $this->fileId;
 	}
 
-	static public function saveComment($post, $em, self $parent = null)
-	{
-		// $parent = new self;
-		// $parent->setUser('parent');
-		// $parent->setTitle('comment');
-		// $parent->setComment('comment');
-		// $parent->setFileId($post['fileId']);
-		// $parent->setPosted();
-		// $em->persist($parent);
-		// $em->flush();
-
-
-		$comment = new self;
-		$comment->setUser($post['name']);
-		$comment->setComment($post['comment']);
-		$comment->setParent($parent);
-		$comment->setFileId($post['fileId']);
-		$comment->setPosted();
-		$em->persist($comment);
-		$em->flush();
-	}
 
 }
