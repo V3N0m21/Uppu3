@@ -90,7 +90,7 @@ $app->get('/download/:id/:name', function($id, $name) use ($app) {
 		header("X-Sendfile:".realpath(dirname(__FILE__)).'/'.$name);
 		header("Content-Type: application/octet-stream");
 		header("Content-Disposition: attachment");
-		exit;
+		return;
 	} else {
 		
 		$app->notFound();
@@ -119,14 +119,8 @@ $app->get('/test', function() use ($app) {
 });
 
 $app->post('/send/:id', function($id) use ($app) {
-	// var_dump($_POST);die();
-	isset($_POST['parent']) ? $parentID = $_POST['parent'] : $parentID = false;
-
-	// var_dump($parentID);die();
-	// $parent = $app->em->find('Uppu3\Resource\Comments', $parentID);
-	$parent = $app->em->find('Uppu3\Entity\Comment', $parentID);
+	$parent = isset($_POST['parent']) ?  $app->em->find('Uppu3\Entity\Comment', $_POST['parent']) : false;
 	$file = $app->em->find('Uppu3\Entity\File', $id);
-	// $parent = null;
 	CommentHelper::saveComment($_POST, $app->em, $parent, $file);
 	$app->redirect("/view/$id");
 });
