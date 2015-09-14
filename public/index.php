@@ -44,10 +44,19 @@ $app->get('/register', function() use ($app) {
 });
 
 $app->post('/register', function() use ($app) {
-	$user = new \Uppu3\Resource\User;
-	$user->userSave($_POST, $app->em);
+	//$user = \Uppu3\Helper\UserHelper::userData($_POST);
+	$validation = new \Uppu3\Helper\ValidationHelper;
+	$validation->validateData($_POST);
+	if (empty($validation->error)) {
+		\Uppu3\Helper\UserHelper::userSave($_POST, $app->em);
+		$app->redirect("/view/$id");
+	} else {
+		$app->render('register.html', array('errors' => $validation->error,
+											'data' => $_POST));
+	};
+	
 
-	$app->redirect('/');
+	//$app->redirect('/');
 });
 
 $app->post('/', function() use ($app) {
@@ -105,17 +114,6 @@ $app->get('/list', function() use ($app) {
 	$app->render('list.html', array('files' => $files,
 		'page' => $page,
 		'helper' => $helper));
-});
-
-$app->get('/test', function() use ($app) {
-
-	$comment = new Comment();
-	$comment->setUser('Food');
-	$comment->setComment('test');
-	$comment->setPosted();
-	$app->em->persist($comment);
-	$app->em->flush();
-	echo $comment->getId();
 });
 
 $app->post('/send/:id', function($id) use ($app) {

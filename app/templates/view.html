@@ -60,30 +60,38 @@
 		</div>
 	</div>
 
+    <script type="text/x-template" id="commentTemplate">
+    <h4><b> Ответить: </b></h4>
+        <form action="/send/{{ file.id }}" method="post">
+        <label for="name">Ваше имя:</label>
+        <input type="text" name="name" onfocus="this.value=''" value="Anonymous"><br>
+        <label for="comment">Your Comment</label><br>
+        <textarea name="comment" id="commentBody"></textarea><br>
+        <input type="hidden" name="fileId" value="{{ file.id }}">
+        <input type="submit" value="Post your comment">
+        <input type="hidden" id="parentComment" name="parent" value="{{ comment.id }}">
+        </form>
+    </script>
     <script type="text/javascript">
+        var commentButton = document.getElementById('commentButton');
+        var commentButtonPost = document.getElementById('commentButtonPost');
+        var div =  document.createElement('div');
+        div.innerHTML = document.getElementById('commentTemplate').innerHTML;
+        div.className = "post-form";
+        var parentComment = document.getElementById('parentComment');
+        var commentBody = document.getElementById('commentBody');
+
         function appendPostForm(id, user, postForm) {
                  postForm.appendChild(div);
+                 var parentComment = document.getElementById('parentComment');
+                 var commentBody = document.getElementById('commentBody');
                  parentComment.value= id;
                  commentButton.style.display = '';
                  commentBody.value = user+ ', ';
         }
-
-        var div =  document.createElement('div');
-        div.className = "post-form";
-        div.innerHTML = '<h4><b> Ответить: </b></h4>' +
-        '<form action="/send/{{ file.id }}" method="post">'+
-        '<label for="name">Ваше имя:</label>'+
-        '<input type="text" name="name" onfocus="this.value=\'\'" value="Anonymous"><br>'+
-        '<label for="comment">Your Comment</label><br>'+
-        '<textarea name="comment" id="commentBody"></textarea><br>'+
-        '<input type="hidden" name="fileId" value="{{ file.id }}">'+
-        '<input type="submit" value="Post your comment">'+
-        '<input type="hidden" id="parentComment" name="parent" value="{{ comment.id }}">'+
-        '</form>'
         commentButton.onclick = function(){
             commentButtonPost.appendChild(div);
             commentButton.style.display = "none";
-            commentBody.value = ''
         }
     </script>
 {% endblock %}

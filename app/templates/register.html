@@ -1,6 +1,8 @@
 {% extends 'layout.html' %}
 {% block content %}
-
+{% for error in errors  %}
+	<p>{{ error }}</p>
+{% endfor %}
 <div class="container-fluid col-md-offset-1">
 	<br>
 	<form action="/register" method="post">
@@ -14,7 +16,7 @@
 			<input type="password" class="form-control" id="password" name="password" placeholder="password">
 		</label><br>
 		<label>Confirm
-			<input type="password" class="form-control" placeholder="password">
+			<input type="password" class="form-control" id="confirmation" name="confirmation" placeholder="password">
 		</label><br><br>
 		<input type="submit" name="submit" class="btn btn-primary" value="Submit" >
 	</form>

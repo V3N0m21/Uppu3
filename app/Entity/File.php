@@ -5,7 +5,6 @@ use Doctrine\ORM\Mapping as ORM;
 
 class File {
 	/** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
-	* @ORM\ManyToMany(targetEntity="Comments", inversedBy="fileId")
 	  */
 	protected $id;
 	/** @ORM\Column(type="string") */
@@ -20,6 +19,8 @@ class File {
 	protected $extension;
 	/** @ORM\Column(type="mediainfotype") */
 	protected $mediainfo;
+	/** @ORM\OneToMany(targetEntity="Comment", mappedBy="fileId") */
+	protected $comments;
 
 	public function getId() 
 	{

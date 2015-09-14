@@ -22,6 +22,7 @@ class Comment {
     /**
      * @Gedmo\TreeParent
      * @ORM\ManyToOne(targetEntity="Comment", inversedBy="children")
+     *
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="parent", referencedColumnName="id", onDelete="CASCADE")
      * })
@@ -44,7 +45,9 @@ class Comment {
 	protected $comment;
 	/** @ORM\Column(type="datetime") */
 	protected $posted;
-	/** @ORM\Column(type="integer") @ORM\ManyToMany(targetEntity="FileResource", mappedBy="id") */
+	/** 
+	* @ORM\Column(name="fileId", type="integer")
+	 */
 	protected $fileId;
 
 	public function getId() 
