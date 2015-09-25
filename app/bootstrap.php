@@ -13,7 +13,7 @@ if (extension_loaded('apc')) {
 	$cache = new \Doctrine\Commmon\Cache\MemcacheCache();
 }
 $isDevMode = true;
-//$config = Setup::createAnnotationMetadataConfiguration(array(__DIR__."/Resource"), $isDevMode); !!!!!!
+$config = Setup::createAnnotationMetadataConfiguration(array(__DIR__."/Resource"), $isDevMode); //!!!!!!
 $annotationReader = new Doctrine\Common\Annotations\AnnotationReader;
 $cachedAnnotationReader = new Doctrine\Common\Annotations\CachedReader(
     $annotationReader, // use reader
@@ -37,7 +37,7 @@ $driverChain->addDriver($annotationDriver, 'Uppu3\Entity');
 $config = new Doctrine\ORM\Configuration;
 $config->setProxyDir(sys_get_temp_dir());
 $config->setProxyNamespace('Proxy');
-$config->setAutoGenerateProxyClasses(false); // this can be based on production config.
+$config->setAutoGenerateProxyClasses(true); // this can be based on production config.
 // register metadata driver
 $config->setMetadataDriverImpl($driverChain);
 // use our already initialized cache driver

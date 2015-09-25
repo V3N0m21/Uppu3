@@ -85,6 +85,14 @@ $app->get('/view/:id/', function($id) use ($app) {
 		'helper' => $helper,
 		'comments' => $comments));
 });
+
+$app->get('/ajax/comments/:id', function($id) use ($app) {
+	$comments = $app->em->getRepository('Uppu3\Entity\Comment')
+	->findBy(array('fileId' => $id), array('path' => 'ASC'));
+	$app->render('comments.html', array('comments' => $comments));
+});
+
+
 $app->get('/comment/:id/', function($id) use ($app) {
 	$comment = $app->em->find('Uppu3\Entity\Comment', $id);
 	echo $comment->getComment();
@@ -120,7 +128,7 @@ $app->post('/send/:id', function($id) use ($app) {
 	$parent = isset($_POST['parent']) ?  $app->em->find('Uppu3\Entity\Comment', $_POST['parent']) : false;
 	$file = $app->em->find('Uppu3\Entity\File', $id);
 	CommentHelper::saveComment($_POST, $app->em, $parent, $file);
-	$app->redirect("/view/$id");
+	//$app->redirect("/view/$id");
 });
 
 $app->run();
