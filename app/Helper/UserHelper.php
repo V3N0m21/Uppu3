@@ -21,7 +21,7 @@ class UserHelper {
         $userResource = new User;
         $userResource->setLogin($data['login']);
         $userResource->setEmail($data['email']);
-        $userResource->setCreated();
+        $userResource->setCreatedNow();
         $salt = HashGenerator::generateSalt();
         $userResource->setSalt($salt);
         $password = HashGenerator::generateHash($data['password'], $salt);

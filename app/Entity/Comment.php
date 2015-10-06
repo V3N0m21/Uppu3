@@ -45,9 +45,10 @@ class Comment {
 	protected $comment;
 	/** @ORM\Column(type="datetime") */
 	protected $posted;
-	/** 
-	* @ORM\Column(name="fileId", type="integer")
-	 */
+	/**
+     * @ORM\ManyToOne(targetEntity="File")
+     * @ORM\JoinColumn(name="fileId", referencedColumnName="id")
+     **/
 	protected $fileId;
 
 	public function getId() 
@@ -88,7 +89,7 @@ class Comment {
 
 	public function setFileId(\Uppu3\Entity\File $file)
 	{
-		$this->fileId = $file->getId();
+		$this->fileId = $file;
 	}
 
 

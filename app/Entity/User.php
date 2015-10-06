@@ -46,7 +46,7 @@ class User {
 		return $this->created;
 	}
 
-	public function setCreated()
+	public function setCreatedNow()
 	{
 		$this->created = new \DateTime("now");
 	}

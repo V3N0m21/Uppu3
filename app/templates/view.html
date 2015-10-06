@@ -104,22 +104,27 @@
         var xhr = new XMLHttpRequest();
         xhr.open("POST", "/send/{{ file.id }}");
         xhr.send(formData);
-        var xhr2 = new XMLHttpRequest();
-        
         var comments = document.getElementById('comments');
         xhr.onreadystatechange = function() {
-            if (xhr.readyState == 4 && xhr.status == 200) {
-                xhr2.open("GET", "/ajax/comments/{{ file.id }}");
-                xhr2.send();
-                xhr2.onreadystatechange = function() {
-                    if (xhr2.readyState == 4 && xhr2.status == 200) {
-                        comments.innerHTML = xhr2.responseText;
+                    if (xhr.readyState == 4 && xhr.status == 200) {
+                        comments.innerHTML = xhr.responseText;
                     }
+        //var xhr2 = new XMLHttpRequest();
+        
+        
+        // xhr.onreadystatechange = function() {
+        //     if (xhr.readyState == 4 && xhr.status == 200) {
+        //         xhr2.open("GET", "/ajax/comments/{{ file.id }}");
+        //         xhr2.send();
+        //         xhr2.onreadystatechange = function() {
+        //             if (xhr2.readyState == 4 && xhr2.status == 200) {
+        //                 comments.innerHTML = xhr2.responseText;
+        //             }
         
         }
         }
-        }
-      }
-    
+        
+      
+
     </script>
 {% endblock %}
