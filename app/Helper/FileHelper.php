@@ -5,7 +5,7 @@ use Uppu3\Entity\File;
 class FileHelper {
 	
 
-	static public function fileSave($data, $em) 
+	static public function fileSave($data, $user, $em) 
 	{
 		$pictures = array('image/jpeg','image/gif','image/png');
 		$fileResource = new File;
@@ -20,7 +20,8 @@ class FileHelper {
 		$mediainfo = \Uppu3\Entity\MediaInfo::getMediaInfo($data['load']['tmp_name']);
 		#$mediainfo = json_encode($mediainfo);
 		$fileResource->setMediainfo($mediainfo); 
-		$fileResource->setUploaded(); 
+		$fileResource->setUploaded();
+		$fileResource->setUploadedBy($user); 
 
 		$em->persist($fileResource);
 		$em->flush();

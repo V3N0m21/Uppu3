@@ -4,6 +4,9 @@ require_once '../app/bootstrap.php';
 use Uppu3\Helper\FormatHelper;
 use Uppu3\Entity\Comment;
 use Uppu3\Helper\CommentHelper;
+use Uppu3\Helper\HashGenerator;
+
+
 
 $app = new \Slim\Slim(array(
 	'view' => new \Slim\Views\Twig(),
@@ -15,53 +18,69 @@ $app->container->singleton('em', function() use ($entityManager) {
 	return  $entityManager;
 });
 
-$app->get('/hello/:world/', function($world) use ($app) {
-	echo "Hello, $world";
-});
 
 $app->get('/', function() use ($app) {
+	$cookie = $app->getCookie('salt');
+		if (!$cookie) {
+			$cookie = HashGenerator::generateSalt();
+			$app->setCookie('salt', $cookie, '1 month');
+		}
+	$user = $app->em->getRepository('Uppu3\Entity\User')->findOneBy(array('salt' => $cookie));
+	if (!$user) {
+		$login = '';
+	} else {
+		$login = $user->getLogin();
+	}
 	$page = 'index';
 	$flash = '';
 	$app->render('file_load.html', array('page' => $page,
-		'flash' => $flash));
+		'flash' => $flash, 'user' => $login));
 
 });
 
 $app->get('/test', function() use ($app) {
-	$data = array(
-		'login' => 'venom',
-		'email' => 'rsyu@yandex.ru',
-		'password' => '1234567'
-		);
-	$user = new \Uppu3\Resource\User;
-	$user->userSave($data, $app->em);
-	var_dump($user);die(); 
-
+	$cookie = $app->getCookie('salt');
+	var_dump($cookie);die();
 });
+
+
 
 $app->get('/register', function() use ($app) {
 	$app->render('register.html');
 });
 
 $app->post('/register', function() use ($app) {
-	//$user = \Uppu3\Helper\UserHelper::userData($_POST);
-	$validation = new \Uppu3\Helper\ValidationHelper;
+	
+	$cookie = $app->getCookie('salt');
+	if (!$cookie) {
+		$cookie = HashGenerator::generateSalt();
+		$app->setCookie('salt', $cookie, '1 month');
+	}
+	$validation = new \Uppu3\Helper\UserValidator;
 	$validation->validateData($_POST);
-	if (empty($validation->error)) {
-		\Uppu3\Helper\UserHelper::userSave($_POST, $app->em);
-		$app->redirect("/view/$id");
+	if (!$validation->hasErrors()) {
+		\Uppu3\Helper\UserHelper::userSave($_POST, $cookie, $app->em);
+		$app->redirect("/");
 	} else {
 		$app->render('register.html', array('errors' => $validation->error,
 											'data' => $_POST));
 	};
 	
-
-	//$app->redirect('/');
 });
 
 $app->post('/', function() use ($app) {
 	if (file_exists($_FILES['load']['tmp_name'])) {
-		$file = \Uppu3\Helper\FileHelper::fileSave($_FILES, $app->em);
+		$cookie = $app->getCookie('salt');
+		if (!$cookie) {
+			$cookie = HashGenerator::generateSalt();
+			$app->setCookie('salt', $cookie, '1 month');
+		}
+		$user = $app->em->getRepository('Uppu3\Entity\User')->findOneBy(array('salt' => $cookie));
+		if (!$user) {
+		$user = \Uppu3\Helper\UserHelper::saveAnonymousUser($cookie, $app->em);
+		}
+
+		$file = \Uppu3\Helper\FileHelper::fileSave($_FILES, $user, $app->em);
 		$id = $file->getId();
 		$app->redirect("/view/$id"); 			
 		
@@ -118,9 +137,15 @@ $app->get('/list', function() use ($app) {
 });
 
 $app->post('/send/:id', function($id) use ($app) {
-	$parent = isset($_POST['parent']) ?  $app->em->find('Uppu3\Entity\Comment', $_POST['parent']) : false;
+	$parent = isset($_POST['parent']) ?  $app->em->find('Uppu3\Entity\Comment', $_POST['parent']) : null;
 	$file = $app->em->find('Uppu3\Entity\File', $id);
 	CommentHelper::saveComment($_POST, $app->em, $parent, $file);
+	$comments = $app->em->getRepository('Uppu3\Entity\Comment')
+	->findBy(array('fileId' => $id), array('path' => 'ASC'));
+	$app->render('comments.html', array('comments' => $comments));
+});
+
+$app->post('/ajaxComments/:id', function($id) use ($app) {
 	$comments = $app->em->getRepository('Uppu3\Entity\Comment')
 	->findBy(array('fileId' => $id), array('path' => 'ASC'));
 	$app->render('comments.html', array('comments' => $comments));

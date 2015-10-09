@@ -1,6 +1,6 @@
 <?php namespace Uppu3\Helper;
 
-class ValidationHelper {
+class UserValidator {
 	public $error;
 
 	public function validateData($data) {
@@ -9,6 +9,10 @@ class ValidationHelper {
         $this->checkEmail($data['email']);
 
 	}
+
+    public function hasErrors() {
+        (!empty($error)) ? true : false;
+    }
 
     private function checkLogin($login) {
         if ($this->notEmpty($login)) {

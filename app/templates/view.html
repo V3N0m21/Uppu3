@@ -22,20 +22,26 @@
 				<input type="submit" value="Post your comment">
                 <input type="hidden" id="parentComment" name="parent" value=""> #}
 			
-		
+		      
             <h3>Комментарии</h3>
+            
+                <button onclick="refreshComments()">Refresh</button>
+                <div class="modal loading">
+            </div>
+
+            
           <div class="comments" id="comments">  
 	  {% for comment in comments %}
 			
 
                 <div class="comment" id="comment{{comment.id}}"
-                 onclick="appendPostForm({{comment.id}}, '{{comment.user}}', postForm{{comment.id}})"
+                 onclick="appendPostForm({{comment.id}}, '{{ comment.user | url_encode}}', postForm{{comment.id}})"
                  style="margin-left:{{ (comment.level -1) * 25 }}px;">
                  <ul style="list-style:none;">
 				<li>
-			<p>Comment by {{ comment.user }} posted on {{ comment.posted|date('d-m-y H:i')  }}</p>
-            <p><i>{{ comment.user }} wrote:</i></p>
-            <p>> {{ comment.comment }}</p>
+			<p>Comment by {{ comment.user}} posted on {{ comment.posted|date('d-m-y H:i')  }}</p>
+            <p><i>{{ comment.user}} wrote:</i></p>
+            <p>> {{ comment.comment}}</p>
             <p><span>reply</span></p>
 				</li>
               
@@ -52,17 +58,18 @@
             <div id='postForm{{comment.id}}'></div>
 		{% endfor %}
          
-        <div class="comment-button" id="commentButton" onclick="applyCommentForm()">
+        <div class="comment-button" id="commentButton">
             <h4>Нажмите чтоб написать комментарий</h4>
             </div>
             <div id="commentButtonPost">
             </div>
 		</div>
 	</div>
-
+    
     <script type="text/x-template" id="commentTemplate">
+    <div class="commentReply">
     <h4><b> Ответить: </b></h4>
-        <form name="commentForm" action="/send/{{ file.id }}" method="post">
+        <form  id="commentForm" name="commentForm">
         <label for="name">Ваше имя:</label>
         <input type="text" name="name" onfocus="this.value=''" value="Anonymous"><br>
         <label for="comment">Your Comment</label><br>
@@ -72,59 +79,59 @@
         <input type="button" onclick="postComment()" value="Post your comment">
         
         </form>
+        </div>
     </script>
-    <script type="text/javascript">
-        var commentButton = document.getElementById('commentButton');
-        var commentButtonPost = document.getElementById('commentButtonPost');
-        var div =  document.createElement('div');
-        div.innerHTML = document.getElementById('commentTemplate').innerHTML;
-        div.className = "post-form";
-        var parentComment = document.getElementById('parentComment');
-        var commentBody = document.getElementById('commentBody');
-        
+    <script>
+    var template = $('#commentTemplate').html();
+   $(document).ready(function(){
+    $("#commentButton").click(function(){
+        $("#commentButton").remove();
+        $(".commentReply").remove();
+        $(template).insertAfter("#commentButtonPost");
+    })
+});
+   function refreshComments(){
+    $.ajax("/ajaxComments/{{file.id}}",
+    {
+        type: "POST",
+        success : function(text)
+        {
+            $( "#comments" ).empty().append(text);
+        },
+    })
+   }
+   function appendPostForm(id, user, postForm) {
+    $(".commentReply").remove();
+    $(template).insertAfter("#comment"+id);
+    $("#parentComment").val(id);
+    $("#commentBody").val(user+ ', ');
+    
+   };
+   
+   function postComment() {
+    var fd = new FormData(document.forms.commentForm);
+    $.ajax("/send/{{file.id}}",
+        {
+        type: "POST",
+        processData: false,
+        contentType: false,
+        data: fd,
+        success : function(text)
+        {
+            $( "#comments" ).empty().append(text);
+        },
+         error: function(xhr, textStatus, errorThrown) {
+        alert(errorThrown + ' - ' + textStatus);
+        },
 
-        function appendPostForm(id, user, postForm) {
-                 postForm.appendChild(div);
-                 var parentComment = document.getElementById('parentComment');
-                 var commentBody = document.getElementById('commentBody');
-                 parentComment.value= id;
-                 commentButton.style.display = '';
-                 commentBody.value = user+ ', ';
-        }
-        // commentButton.onclick = function(){
-        //     commentButtonPost.appendChild(div);
-        //     commentButton.style.display = "none";
-        // }
-        function applyCommentForm(){
-            commentButtonPost.appendChild(div);
-            commentButton.style.display = "none";
-        }
-        function postComment(){
-        var formData = new FormData(document.forms.commentForm);
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", "/send/{{ file.id }}");
-        xhr.send(formData);
-        var comments = document.getElementById('comments');
-        xhr.onreadystatechange = function() {
-                    if (xhr.readyState == 4 && xhr.status == 200) {
-                        comments.innerHTML = xhr.responseText;
-                    }
-        //var xhr2 = new XMLHttpRequest();
-        
-        
-        // xhr.onreadystatechange = function() {
-        //     if (xhr.readyState == 4 && xhr.status == 200) {
-        //         xhr2.open("GET", "/ajax/comments/{{ file.id }}");
-        //         xhr2.send();
-        //         xhr2.onreadystatechange = function() {
-        //             if (xhr2.readyState == 4 && xhr2.status == 200) {
-        //                 comments.innerHTML = xhr2.responseText;
-        //             }
-        
-        }
-        }
-        
-      
+    });
+   };
+   $body = $(".modal");
 
+    $(document).on({
+     ajaxStart: function() { $body.css({"display": "block"});    },
+     ajaxStop: function() { $body.css({"display": "none"}); }    
+});
     </script>
+    
 {% endblock %}

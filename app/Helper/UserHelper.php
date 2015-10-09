@@ -16,17 +16,27 @@ class UserHelper {
         // return $userResource;
         // }
 
-	static public function userSave($data, $em)
+	static public function userSave($data, $cookie, $em)
 	{
-        $userResource = new User;
+        $userResource = $em->getRepository('Uppu3\Entity\User')->findOneBy(array('salt' => $cookie));
+        if (!$userResource) {
+            $userResource = self::saveAnonymousUser($cookie, $em);
+        }
         $userResource->setLogin($data['login']);
         $userResource->setEmail($data['email']);
         $userResource->setCreatedNow();
-        $salt = HashGenerator::generateSalt();
-        $userResource->setSalt($salt);
-        $password = HashGenerator::generateHash($data['password'], $salt);
-        $userResource->setPassword($password);
-        $em->persist($user);
+        $hash = HashGenerator::generateHash($data['password'], $cookie);
+        $userResource->setHash($hash);
+        $em->persist($userResource);
         $em->flush();
 	}
+
+    static public function saveAnonymousUser($salt, $em)
+    {
+        $userModel = new User;
+        $userModel->setSalt($salt);
+        $em->persist($userModel);
+        $em->flush();
+        return $userModel;
+    }
 }

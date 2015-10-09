@@ -3,7 +3,10 @@ use Doctrine\ORM\Mapping as ORM;
 /** @ORM\Entity @ORM\Table(name="users") */
 
 class User {
-	/** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
+	/**
+	*@ORM\Id @ORM\Column(type="integer") 
+	*@ORM\GeneratedValue
+	*/
 	protected $id;
 	/** @ORM\Column(type="string") */
 	protected $login;
@@ -14,7 +17,7 @@ class User {
 	/** @ORM\Column(type="string") */
 	protected $salt;
 	/** @ORM\Column(type="string") */
-	protected $password;
+	protected $hash;
 
 	public function getId()
 	{
@@ -56,9 +59,9 @@ class User {
 		return $this->password;
 	}
 
-	public function setPassword($password)
+	public function setHash($hash)
 	{
-		$this->password = $password;
+		$this->hash = $hash;
 	}
 
 	public function getSalt()

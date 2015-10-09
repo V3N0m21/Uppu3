@@ -4,8 +4,11 @@ use Doctrine\ORM\Mapping as ORM;
 
 
 class File {
-	/** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
-	  */
+	/**
+	*@ORM\Id
+	*@ORM\Column(type="integer") 
+	*@ORM\GeneratedValue
+	*/
 	protected $id;
 	/** @ORM\Column(type="string") */
 	protected $name;
@@ -21,6 +24,11 @@ class File {
 	protected $mediainfo;
 	/** @ORM\OneToMany(targetEntity="Comment", mappedBy="fileId") */
 	protected $comments;
+	/**
+     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\JoinColumn(name="uploadedBy", referencedColumnName="id")
+     **/
+	protected $uploadedBy;
 
 	public function getId() 
 	{
@@ -55,6 +63,15 @@ class File {
 	public function setUploaded()
 	{
 		$this->uploaded = new \DateTime("now");
+	}
+	public function getUploadedBy()
+	{
+		return $this->uploadedBy;
+	}
+
+	public function setUploadedBy(\Uppu3\Entity\User $user)
+	{
+		$this->uploadedBy = $user;
 	}
 
 	public function getComment()

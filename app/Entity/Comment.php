@@ -7,7 +7,11 @@ use Gedmo\Mapping\Annotation as Gedmo;
 * @Gedmo\Tree(type="materializedPath")
 */
 class Comment {
-	/** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue @Gedmo\TreePathSource */
+	/**
+	*@ORM\Id @ORM\Column(type="integer")
+	*@ORM\GeneratedValue
+	*@Gedmo\TreePathSource
+	*/
 	protected $id;
 	/** 
 	* @ORM\Column(type="string")
@@ -24,7 +28,7 @@ class Comment {
      * @ORM\ManyToOne(targetEntity="Comment", inversedBy="children")
      *
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="parent", referencedColumnName="id", onDelete="CASCADE")
+     * @ORM\JoinColumn(name="parent", referencedColumnName="id", onDelete="CASCADE")
      * })
      */
     private $parent;

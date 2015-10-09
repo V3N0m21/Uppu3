@@ -39,9 +39,29 @@
 	margin-top: 20px;
 }
 
+#refresh:hover{
+	color:#cccccc;
+}
 .comment-button>h4:hover {
 	color:#cccccc;
 }
 .post-form {
 	border-top: 1px solid black;
+}
+
+#refresh {
+	height:25px;
+}
+
+.modal {
+	width:35px;
+	height:25px;
+    display:    none;
+    position:   relative;
+    top: -20px;
+    left:80px;
+    background:
+                url('/img/ajax-loader.gif') 
+                no-repeat;
+    
 }
