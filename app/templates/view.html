@@ -1,96 +1,96 @@
 {% extends 'layout.html' %}
 {% block content %}
-	<div class="container-fluid">
-		{% if helper.isPicture(file.extension)%}
-			{% include 'view_image.html' %}
-			{% elseif helper.isVideo(file.extension)%}
-			{% include 'view_video.html' %}
-			{% else %}
-			<p> {{ file.name }} </p>
-			<p><a href="{{ helper.formatDownloadLink(file.id, file.name)}}">Скачать файл</a></p>
-			<p><strong>Загружен:</strong> {{ file.uploaded|date('d-m-y H:i') }}</p>
-			<p><strong>Размер файла:</strong> {{ helper.formatSize(file.size) }}</p>
-			<p>{{ file.extension }}</p>
-		{% endif %}
-			{# <h4>Post Your Comment:</h4>
-			<form action="/send/{{ file.id }}" method="post">
-				<label for="name">Ваше имя</label><br>
-				<input type='text' name="name" value="Anonymous"><br>
-				<label for="comment">Your Comment</label><br>
-				<textarea name="comment" id="commentBody"></textarea><br>
-				<input type="hidden" name="fileId" value="{{ file.id }}">
-				<input type="submit" value="Post your comment">
-                <input type="hidden" id="parentComment" name="parent" value=""> #}
-			
-		      
-            <h3>Комментарии</h3>
-            
-                <button onclick="refreshComments()">Refresh</button>
-                <div class="modal loading">
-            </div>
-
-            
-          <div class="comments" id="comments">  
-	  {% for comment in comments %}
-			
-
-                <div class="comment" id="comment{{comment.id}}"
-                 onclick="appendPostForm({{comment.id}}, '{{ comment.user | url_encode}}', postForm{{comment.id}})"
-                 style="margin-left:{{ (comment.level -1) * 25 }}px;">
-                 <ul style="list-style:none;">
-				<li>
-			<p>Comment by {{ comment.user}} posted on {{ comment.posted|date('d-m-y H:i')  }}</p>
-            <p><i>{{ comment.user}} wrote:</i></p>
-            <p>> {{ comment.comment}}</p>
-            <p><span>reply</span></p>
-				</li>
-              
-			</ul>
-
-			{# {% if  %} #}
-			{# <div style="border: 1px solid black; background:black; color:gold; padding:5px;margin:5px;">
-			<p>Parent {{ comment.id }}</p>
-			<p>Comment by {{ comment.user }} posted on {{ comment.posted|date('d-m-y H:i')  }}</p>
-			<p><i>{{ comment.user }} wrote:</i></p>
-			<p style="color:green">> {{ comment.comment }}</p>
-			</div> #}
-            </div>
-            <div id='postForm{{comment.id}}'></div>
-		{% endfor %}
-         
-        <div class="comment-button" id="commentButton">
-            <h4>Нажмите чтоб написать комментарий</h4>
-            </div>
-            <div id="commentButtonPost">
-            </div>
-		</div>
-	</div>
+<div class="container-fluid">
+  {% if helper.isPicture(file.extension)%}
+  {% include 'view_image.html' %}
+  {% elseif helper.isVideo(file.extension)%}
+  {% include 'view_video.html' %}
+  {% else %}
+  <p> {{ file.name }} </p>
+  <p><a href="{{ helper.formatDownloadLink(file.id, file.name)}}">Скачать файл</a></p>
+  <p><strong>Загружен:</strong> {{ file.uploaded|date('d-m-y H:i') }}</p>
+  <p><strong>Размер файла:</strong> {{ helper.formatSize(file.size) }}</p>
+  <p>{{ file.extension }}</p>
+  {% endif %}
+  {# <h4>Post Your Comment:</h4>
+  <form action="/send/{{ file.id }}" method="post">
+    <label for="name">Ваше имя</label><br>
+    <input type='text' name="name" value="Anonymous"><br>
+    <label for="comment">Your Comment</label><br>
+    <textarea name="comment" id="commentBody"></textarea><br>
+    <input type="hidden" name="fileId" value="{{ file.id }}">
+    <input type="submit" value="Post your comment">
+    <input type="hidden" id="parentComment" name="parent" value=""> #}
     
-    <script type="text/x-template" id="commentTemplate">
-    <div class="commentReply">
-    <h4><b> Ответить: </b></h4>
-        <form  id="commentForm" name="commentForm">
-        <label for="name">Ваше имя:</label>
-        <input type="text" name="name" onfocus="this.value=''" value="Anonymous"><br>
-        <label for="comment">Your Comment</label><br>
-        <textarea name="comment" id="commentBody"></textarea><br>
-        <input type="hidden" name="fileId" value="{{ file.id }}">
-        <input type="hidden" id="parentComment" name="parent" value="{{ comment.id }}">
-        <input type="button" onclick="postComment()" value="Post your comment">
-        
-        </form>
-        </div>
-    </script>
-    <script>
-    var template = $('#commentTemplate').html();
-   $(document).ready(function(){
+    
+    <h3>Комментарии</h3>
+    
+    <button onclick="refreshComments()">Refresh</button>
+    <div class="modal loading">
+    </div>
+
+    
+    <div class="comments" id="comments">  
+     {% for comment in comments %}
+     
+
+     <div class="comment" id="comment{{comment.id}}"
+     onclick="appendPostForm({{comment.id}}, '{{ comment.user | url_encode}}', postForm{{comment.id}})"
+     style="margin-left:{{ (comment.level -1) * 25 }}px;">
+     <ul style="list-style:none;">
+        <li>
+         <p>Comment by {{ comment.user}} posted on {{ comment.posted|date('d-m-y H:i')  }}</p>
+         <p><i>{{ comment.user}} wrote:</i></p>
+         <p>> {{ comment.comment}}</p>
+         <p><span>reply</span></p>
+     </li>
+     
+ </ul>
+
+ {# {% if  %} #}
+ {# <div style="border: 1px solid black; background:black; color:gold; padding:5px;margin:5px;">
+ <p>Parent {{ comment.id }}</p>
+ <p>Comment by {{ comment.user }} posted on {{ comment.posted|date('d-m-y H:i')  }}</p>
+ <p><i>{{ comment.user }} wrote:</i></p>
+ <p style="color:green">> {{ comment.comment }}</p>
+</div> #}
+</div>
+<div id='postForm{{comment.id}}'></div>
+{% endfor %}
+
+<div class="comment-button" id="commentButton">
+    <h4>Нажмите чтоб написать комментарий</h4>
+</div>
+<div id="commentButtonPost">
+</div>
+</div>
+</div>
+
+<script type="text/x-template" id="commentTemplate">
+<div class="commentReply">
+<h4><b> Ответить: </b></h4>
+<form  id="commentForm" name="commentForm">
+<label for="name">Ваше имя:</label>
+<input type="text" name="name" onfocus="this.value=''" value="Anonymous"><br>
+<label for="comment">Your Comment</label><br>
+<textarea name="comment" id="commentBody"></textarea><br>
+<input type="hidden" name="fileId" value="{{ file.id }}">
+<input type="hidden" id="parentComment" name="parent" value="{{ comment.id }}">
+<input type="button" onclick="postComment()" value="Post your comment">
+
+</form>
+</div>
+</script>
+<script>
+var template = $('#commentTemplate').html();
+$(document).ready(function(){
     $("#commentButton").click(function(){
         $("#commentButton").remove();
         $(".commentReply").remove();
         $(template).insertAfter("#commentButtonPost");
     })
 });
-   function refreshComments(){
+function refreshComments(){
     $.ajax("/ajaxComments/{{file.id}}",
     {
         type: "POST",
@@ -99,19 +99,19 @@
             $( "#comments" ).empty().append(text);
         },
     })
-   }
-   function appendPostForm(id, user, postForm) {
+}
+function appendPostForm(id, user, postForm) {
     $(".commentReply").remove();
     $(template).insertAfter("#comment"+id);
     $("#parentComment").val(id);
     $("#commentBody").val(user+ ', ');
     
-   };
-   
-   function postComment() {
+};
+
+function postComment() {
     var fd = new FormData(document.forms.commentForm);
     $.ajax("/send/{{file.id}}",
-        {
+    {
         type: "POST",
         processData: false,
         contentType: false,
@@ -120,18 +120,18 @@
         {
             $( "#comments" ).empty().append(text);
         },
-         error: function(xhr, textStatus, errorThrown) {
-        alert(errorThrown + ' - ' + textStatus);
+        error: function(xhr, textStatus, errorThrown) {
+            alert(errorThrown + ' - ' + textStatus);
         },
 
     });
-   };
-   $body = $(".modal");
+};
+$body = $(".modal");
 
-    $(document).on({
-     ajaxStart: function() { $body.css({"display": "block"});    },
-     ajaxStop: function() { $body.css({"display": "none"}); }    
+$(document).on({
+   ajaxStart: function() { $body.css({"display": "block"});    },
+   ajaxStop: function() { $body.css({"display": "none"}); }    
 });
-    </script>
-    
+</script>
+
 {% endblock %}
