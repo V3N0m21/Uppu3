@@ -29,6 +29,7 @@ class UserHelper {
         $userResource->setHash($hash);
         $em->persist($userResource);
         $em->flush();
+        return $userResource;
 	}
 
     static public function saveAnonymousUser($salt, $em)

@@ -3,12 +3,15 @@
 	<div class="container-fluid">
 		<ul class="list-group">
 			{% for user in users %}
+				{% if user.login != 'Anonymous' %}
 				<li class="list-group-item">
-					<p>Login: <a href="/users/{{user.id}}/">{{ user.login }}</a></p>
+					
+					<p>Login: <a href="/users/{{user.id}}/">{{ user.login }}
+						{% if cookie == user.salt %}(You) {% endif %}</a></p>
 					<p>e-mail: {{user.email}}</p>
 					<p>Registered: {{ user.created|date('y-m-d h:i') }}</p>
 				</li>
-
+				{% endif %}
 			{% endfor %}
 		</ul>
 	</div>

@@ -59,8 +59,9 @@ $app->post('/register', function() use ($app) {
 	$validation = new \Uppu3\Helper\UserValidator;
 	$validation->validateData($_POST);
 	if (!$validation->hasErrors()) {
-		\Uppu3\Helper\UserHelper::userSave($_POST, $cookie, $app->em);
-		$app->redirect("/");
+		$user = \Uppu3\Helper\UserHelper::userSave($_POST, $cookie, $app->em);
+		$id = $user->getId();
+		$app->redirect("users/$id");
 	} else {
 		$app->render('register.html', array('errors' => $validation->error,
 											'data' => $_POST));
@@ -132,11 +133,13 @@ $app->get('/download/:id/:name', function($id, $name) use ($app) {
 });
 
 $app->get('/users/', function() use ($app) {
+	$cookie = $app->getCookie('salt');
 	$page = 'users';
 	$users = $app->em->getRepository('Uppu3\Entity\User')
 	->findBy([],['created' => 'DESC']);
 	$app->render('users.html', array('users' => $users,
-		'page' => $page
+		'page' => $page,
+		'cookie' => $cookie
 		));
 });
 
