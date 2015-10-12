@@ -137,9 +137,16 @@ $app->get('/users/', function() use ($app) {
 	$page = 'users';
 	$users = $app->em->getRepository('Uppu3\Entity\User')
 	->findBy([],['created' => 'DESC']);
+	$filesCount = [];
+	foreach ($users as $user) {
+		$filesCount[$user->getId()] = count($app->em->getRepository('Uppu3\Entity\File')
+	->findByUploadedBy($user->getId()));
+	}
+	//var_dump($filesCount);die();
 	$app->render('users.html', array('users' => $users,
 		'page' => $page,
-		'cookie' => $cookie
+		'cookie' => $cookie,
+		'filesCount' => $filesCount
 		));
 });
 
