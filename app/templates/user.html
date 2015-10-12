@@ -1,13 +1,16 @@
 {% extends 'layout.html' %}
 {% block content %}
 	<div class="container-fluid">
+		<h2>{{user.login}}</h2>
+		<p>email: {{user.email}}</p>
+		<p>registered: {{user.created|date('y-m-d h:i') }}</p>
+		<h3>Files uploaded by user:</h3>
 		<ul class="list-group">
 			{% for file in files %}
 				<li class="list-group-item">
 					<p><a href="/view/{{ file.id }}">{{ file.name }}</a> загружен {{ file.uploaded|date('y-m-d h:i') }}</p>
 					<p><strong>Комментарий пользователя:</strong>   {{ file.comment }}</p>
 					<p><strong>Размер файла:</strong>  {{ helper.formatSize(file.size) }}</p>
-					<p>Загрузил <strong>{{ users[file.uploadedBy|e] }}</strong></p>
 				</li>
 				{% else %}
 				<p>There are currently no files.</p>

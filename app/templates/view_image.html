@@ -3,5 +3,6 @@
 	<img src="{{ helper.formatPreviewLink(file.id,file.name)}}">
 	<p><a href="{{ helper.formatDownloadLink(file.id, file.name) }}">Скачать файл</a></p>
 	<p><strong>Загружен:</strong> {{ file.uploaded|date('d-m-y H:i') }}</p>
+	<p><strong>Загрузил:</strong> {{ user.login|e }}</p>
 	<p><strong>Разрешение фото:</strong> {{ info.resolution_x }} x {{ info.resolution_y }}</p>
 	<p><strong>Размер файла:</strong> {{ helper.formatSize(file.size) }}</p>

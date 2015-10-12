@@ -35,6 +35,7 @@ class UserHelper {
     {
         $userModel = new User;
         $userModel->setSalt($salt);
+        $userModel->setLogin('Anonymous');
         $em->persist($userModel);
         $em->flush();
         return $userModel;

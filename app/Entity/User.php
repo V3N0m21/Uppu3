@@ -74,4 +74,10 @@ class User {
 		$this->salt = $salt;
 	}
 
+	public function __toString()
+{
+    return (string) $this->getId();
+}
+
+
 }

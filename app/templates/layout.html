@@ -13,6 +13,7 @@
 		<ul class="list-inline nav navbar-nav">
 			<li class="{% if page == 'index' %}active{% endif %}"><a href="/">Главная</a></li>
 			<li class="{% if page == 'list' %}active{% endif %}"><a href="/list">Список файлов</a></li>
+            <li class="{% if page == 'users' %}active{% endif %}"><a href="/users">Пользователи</a></li>
 		</ul>
 		{% if user == '' %}<a class="btn btn-default navbar-btn navbar-right" href="/register" role="button">Sign up</a>{% endif %}
 		</nav>

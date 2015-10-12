@@ -92,6 +92,8 @@ $app->post('/', function() use ($app) {
 
 $app->get('/view/:id/', function($id) use ($app) {
 	$file = $app->em->find('Uppu3\Entity\File', $id);
+	$user = $app->em->getRepository('Uppu3\Entity\User')
+	->findOneById($file->getUploadedBy());
 	if (!$file) {
 		$app->notFound();
 	}
@@ -100,6 +102,7 @@ $app->get('/view/:id/', function($id) use ($app) {
 	->findBy(array('fileId' => $id), array('path' => 'ASC'));
 	$info = $file->getMediainfo();
 	$app->render('view.html', array('file' => $file,
+		'user' => $user,
 		'info' => $info,
 		'helper' => $helper,
 		'comments' => $comments));
@@ -109,6 +112,8 @@ $app->get('/comment/:id/', function($id) use ($app) {
 	$comment = $app->em->find('Uppu3\Entity\Comment', $id);
 	echo $comment->getComment();
 });
+
+
 
 
 $app->get('/download/:id/:name', function($id, $name) use ($app) {
@@ -126,15 +131,46 @@ $app->get('/download/:id/:name', function($id, $name) use ($app) {
 	}
 });
 
+$app->get('/users/', function() use ($app) {
+	$page = 'users';
+	$users = $app->em->getRepository('Uppu3\Entity\User')
+	->findBy([],['created' => 'DESC']);
+	$app->render('users.html', array('users' => $users,
+		'page' => $page
+		));
+});
+
+$app->get('/users/:id/', function($id) use($app) {
+	$helper= new FormatHelper();
+	$page = 'users';
+	$user = $app->em->getRepository('Uppu3\Entity\User')
+	->findOneById($id);
+	$files = $app->em->getRepository('Uppu3\Entity\File')
+	->findByUploadedBy($id);
+	$app->render('user.html', array('user' => $user,
+		'files' => $files,
+		'helper' => $helper,
+		'page' => $page));
+});
+
 $app->get('/list', function() use ($app) {
 	$helper= new FormatHelper();
 	$page = 'list';
 	$files = $app->em->getRepository('Uppu3\Entity\File')
 	->findBy([],['uploaded' => 'DESC'],50,0);
+	$users = [];
+	foreach ($files as $file) {
+		$id = $file->getUploadedBy(); 
+		$user = $app->em->getRepository('Uppu3\Entity\User')
+		->findOneById($id);
+		$users[$user->getId()] = $user->getLogin();
+	};
 	$app->render('list.html', array('files' => $files,
+		'users' => $users,
 		'page' => $page,
 		'helper' => $helper));
 });
+
 
 $app->post('/send/:id', function($id) use ($app) {
 	$parent = isset($_POST['parent']) ?  $app->em->find('Uppu3\Entity\Comment', $_POST['parent']) : null;

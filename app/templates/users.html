@@ -1,0 +1,15 @@
+{% extends 'layout.html' %}
+{% block content %}
+	<div class="container-fluid">
+		<ul class="list-group">
+			{% for user in users %}
+				<li class="list-group-item">
+					<p>Login: <a href="/users/{{user.id}}/">{{ user.login }}</a></p>
+					<p>e-mail: {{user.email}}</p>
+					<p>Registered: {{ user.created|date('y-m-d h:i') }}</p>
+				</li>
+
+			{% endfor %}
+		</ul>
+	</div>
+{% endblock %}
