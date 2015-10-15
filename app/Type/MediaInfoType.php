@@ -1,4 +1,5 @@
-<?php namespace Uppu3\Type;
+<?php
+namespace Uppu3\Type;
 
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
@@ -6,28 +7,24 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 class MediaInfoType extends Type
 {
     const MEDIAINFOTYPE = 'mediainfotype';
-
-     public function convertToPHPValue($info)
-    {
+    
+    public function convertToPHPValue($info) {
         
         $info = json_decode($info);
         $mediaInfo = \Uppu3\Entity\MediaInfo::setMediaInfo($info);
         return $mediaInfo;
     }
-
-    public function convertToDatabaseValue(\Uppu3\Entity\MediaInfo $mediaInfo)
-    {
+    
+    public function convertToDatabaseValue(\Uppu3\Entity\MediaInfo $mediaInfo) {
         $mediaInfo = json_encode($mediaInfo);
         return $mediaInfo;
     }
-
-    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
-    {
+    
+    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform) {
         return $platform->getJsonTypeDeclarationSQL($fieldDeclaration);
     }
-
-    public function getName()
-    {
+    
+    public function getName() {
         return self::MEDIAINFOTYPE;
     }
 }

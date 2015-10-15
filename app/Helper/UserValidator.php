@@ -1,19 +1,20 @@
-<?php namespace Uppu3\Helper;
+<?php
+namespace Uppu3\Helper;
 
-class UserValidator {
-	public $error;
-
-	public function validateData($data) {
+class UserValidator
+{
+    public $error;
+    
+    public function validateData($data) {
         $this->checkLogin($data['login']);
-        $this->checkPassword($data['password'],$data['confirmation']);
+        $this->checkPassword($data['password'], $data['confirmation']);
         $this->checkEmail($data['email']);
-
-	}
-
+    }
+    
     public function hasErrors() {
         (!empty($error)) ? true : false;
     }
-
+    
     private function checkLogin($login) {
         if ($this->notEmpty($login)) {
             return true;
@@ -24,13 +25,14 @@ class UserValidator {
         if ($this->notEmpty($email)) {
             if ($this->isEmail($email)) {
                 return true;
-            } else {
+            } 
+            else {
                 return $this->error['email'] = 'Email isn\'t valid';
             }
         }
-            return $this->error['email'] = "Email must be filled.";
+        return $this->error['email'] = "Email must be filled.";
     }
-    private function checkPassword($password,$confirmation) {
+    private function checkPassword($password, $confirmation) {
         if ($this->notEmpty($password) && $this->notEmpty($confirmation)) {
             if ($password !== $confirmation) {
                 return $this->error['password'] = 'Password and confirmation doesn\'t match.';
@@ -38,16 +40,15 @@ class UserValidator {
             return true;
         }
         return $this->error['password'] = 'Password must be present';
-        
     }
-
+    
     private function notEmpty($field) {
         if (empty($field)) {
             return false;
         }
         return true;
     }
-
+    
     private function isEmail($field) {
         $regExp = "/.+@.+\..+/i";
         if (!preg_match($regExp, $field)) {

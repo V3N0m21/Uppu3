@@ -1,11 +1,12 @@
-<?php namespace Uppu3\Resource;
+<?php
+namespace Uppu3\Resource;
 use Uppu3\Helper\HashGenerator as HashGenerator;
 
-class User {
-
-	static public function userSave($data, $em)
-	{
-		$userResource = new UserResource;
+class User
+{
+    
+    static public function userSave($data, $em) {
+        $userResource = new UserResource;
         $userResource->setLogin($data['login']);
         $userResource->setEmail($data['email']);
         $userResource->setCreated();
@@ -15,5 +16,5 @@ class User {
         $userResource->setPassword($password);
         $em->persist($userResource);
         $em->flush();
-	}
+    }
 }
