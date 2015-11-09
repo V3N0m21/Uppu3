@@ -162,8 +162,5 @@ $app->post('/ajaxComments/:id', function ($id) use ($app) {
     $app->render('comments.html', array('comments' => $comments));
 });
 
-$app->get('/sendjson', function () use ($app) {
-    $app->render('json.html');
-});
 
 $app->run();
