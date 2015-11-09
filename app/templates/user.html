@@ -3,8 +3,8 @@
 	<div class="container-fluid">
 		<h2>{{user.login}}</h2>
 		<p>email: {{user.email}}</p>
-		<p>registered: {{user.created|date('y-m-d h:i') }}</p>
-		<h3>Files uploaded by user:</h3>
+		<p>Зарегистрирован: {{user.created|date('y-m-d h:i') }}</p>
+		<h3>Файлы загруженные пользователем:</h3>
 		<ul class="list-group">
 			{% for file in files %}
 				<li class="list-group-item">
@@ -13,7 +13,7 @@
 					<p><strong>Размер файла:</strong>  {{ helper.formatSize(file.size) }}</p>
 				</li>
 				{% else %}
-				<p>There are currently no files.</p>
+				<p>Файлы отсутствуют.</p>
 				
 			{% endfor %}
 		</ul>

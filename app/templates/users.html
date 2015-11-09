@@ -7,7 +7,7 @@
 				<li class="list-group-item">
 					
 					<p>Login: <a href="/users/{{user.id}}/">{{ user.login }}
-						{% if cookie == user.salt %}(You) {% endif %}</a></p>
+						{% if cookie == user.salt %}(Это вы) {% endif %}</a></p>
 					<p>e-mail: {{user.email}}</p>
 					<p>Registered: {{ user.created|date('y-m-d h:i') }}</p>
 					<p>Files Uploaded: {{ filesCount[user.id] }}</p>

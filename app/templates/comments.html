@@ -7,10 +7,10 @@
                  style="margin-left:{{ (comment.level -1) * 25 }}px;">
                  <ul style="list-style:none;">
 				<li>
-			<p>Comment by {{ comment.user }} posted on {{ comment.posted|date('d-m-y H:i')  }}</p>
-            <p><i>{{ comment.user }} wrote:</i></p>
+			<p>{{ comment.posted|date('d-m-y H:i')  }}</p>
+            <p><i>{{ comment.user }} написал:</i></p>
             <p>> {{ comment.comment }}</p>
-            <p><span>reply</span></p>
+            <p><span>ответить</span></p>
 				</li>
               
 			</ul>
@@ -18,8 +18,8 @@
 			{# {% if  %} #}
 			{# <div style="border: 1px solid black; background:black; color:gold; padding:5px;margin:5px;">
 			<p>Parent {{ comment.id }}</p>
-			<p>Comment by {{ comment.user }} posted on {{ comment.posted|date('d-m-y H:i')  }}</p>
-			<p><i>{{ comment.user }} wrote:</i></p>
+			<p>{{ comment.posted|date('d-m-y H:i')  }}</p>
+			<p><i>{{ comment.user }} написал:</i></p>
 			<p style="color:green">> {{ comment.comment }}</p>
 			</div> #}
             </div>

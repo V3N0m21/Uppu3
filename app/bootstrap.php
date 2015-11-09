@@ -10,7 +10,7 @@ AnnotationRegistry::registerFile(dirname(__DIR__)."/vendor/doctrine/orm/lib/Doct
 if (extension_loaded('apc')) {
 	$cache = new \Doctrine\Common\Cache\ApcCache();
 } else {
-	$cache = new \Doctrine\Commmon\Cache\MemcacheCache();
+	$cache = new \Doctrine\Common\Cache\MemcacheCache();
 }
 $isDevMode = true;
 $config = Setup::createAnnotationMetadataConfiguration(array(__DIR__."/Resource"), $isDevMode); //!!!!!!
@@ -49,7 +49,7 @@ $treeListener->setAnnotationReader($cachedAnnotationReader);
 $evm->addEventSubscriber($treeListener);
 $evm->addEventSubscriber(new Doctrine\DBAL\Event\Listeners\MysqlSessionInit());
 
- $deleted = $cache->deleteAll();
+ //$deleted = $cache->deleteAll();
 
 $conn = array(
 	'driver' => 'pdo_mysql',

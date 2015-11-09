@@ -8,6 +8,7 @@ class FileHelper
     static public function fileSave($data, $user, $em) {
         $pictures = array('image/jpeg', 'image/gif', 'image/png');
         $fileResource = new File;
+
         
         //$fileResource->saveFile($data['load']);
         
@@ -31,6 +32,7 @@ class FileHelper
         $tmpFile = $data['load']['tmp_name'];
         $newFile = \Uppu3\Helper\FormatHelper::formatUploadLink($id, $data['load']['name']);
         $result = move_uploaded_file($tmpFile, $newFile);
+        
         
         if (in_array($fileResource->getExtension(), $pictures)) {
             $path = \Uppu3\Helper\FormatHelper::formatUploadResizeLink($id, $data['load']['name']);
