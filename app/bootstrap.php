@@ -53,8 +53,8 @@ $evm->addEventSubscriber(new Doctrine\DBAL\Event\Listeners\MysqlSessionInit());
 
 $conn = array(
 	'driver' => 'pdo_mysql',
-	'user' => 'user',
-	'password' => '1234567',
+	'user' => 'root',
+	'password' => 'vxzNO9',
 	'dbname' => 'publications',
 	'mapping_types' => array(
 		'enum' => 'string'

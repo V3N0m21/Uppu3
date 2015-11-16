@@ -6,6 +6,7 @@ use Uppu3\Entity\Comment;
 use Uppu3\Helper\CommentHelper;
 use Uppu3\Helper\HashGenerator;
 
+
 $app = new \Slim\Slim(array('view' => new \Slim\Views\Twig(), 'templates.path' => '../app/templates'));
 
 $app->container->singleton('em', function () use ($entityManager) {
@@ -20,7 +21,7 @@ $app->get('/', function () use ($app) {
         $app->setCookie('salt', $cookie, '1 month');
     }
     $user = $app->em->getRepository('Uppu3\Entity\User')->findOneBy(array('salt' => $cookie));
-    if ($user) {
+    if (!$user) {
         $login = '';
     } 
     else {
