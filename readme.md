@@ -1,11 +1,16 @@
+Uppu3
+=====
 To deploy my filesharing app "Uppu3" on your local computer you have to go throrugh the following steps:
+
 1. Clone git repository into the directory of your choosing.
-2. In your bash go to the root directory of the project and run "composer install"
-3. After all required libraries and dependencies are installed type in the bash following commands
-mysql -u username -p -h localhost your-database-name < files.sql;
-mysql -u username -p -h localhost your-database-name < users.sql;
-mysql -u username -p -h localhost your-database-name < comments.sql;
-to set up required tables in your database
+
+2. In your bash go to the root directory of the project and run "composer install".
+
+3. After all required libraries and dependencies are installed type in the bash following commands:
+* mysql -u username -p -h localhost your-database-name < files.sql;
+* mysql -u username -p -h localhost your-database-name < users.sql;
+* mysql -u username -p -h localhost your-database-name < comments.sql;
+* to set up required tables in your database.
 
 Server requirements:
 
