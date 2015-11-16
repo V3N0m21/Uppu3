@@ -21,7 +21,7 @@
 *.zip
 composer.phar
 
-public/upload/
+public/upload/*.*
 vendor/
 .idea/
  
