@@ -20,7 +20,7 @@ $app->get('/', function () use ($app) {
         $app->setCookie('salt', $cookie, '1 month');
     }
     $user = $app->em->getRepository('Uppu3\Entity\User')->findOneBy(array('salt' => $cookie));
-    if ($user) {
+    if (!$user) {
         $login = '';
     } 
     else {
