@@ -6,11 +6,11 @@
 				{% if user.login != 'Anonymous' %}
 				<li class="list-group-item">
 					
-					<p>Login: <a href="/users/{{user.id}}/">{{ user.login }}
+					<p>Логин: <a href="/users/{{user.id}}/">{{ user.login }}
 						{% if cookie == user.salt %}(Это вы) {% endif %}</a></p>
 					<p>e-mail: {{user.email}}</p>
-					<p>Registered: {{ user.created|date('y-m-d h:i') }}</p>
-					<p>Files Uploaded: {{ filesCount[user.id] }}</p>
+					<p>Зарегистрирован: {{ user.created|date('d.m.Y h:i') }}</p>
+					<p>Файлов загружено: {{ filesCount[user.id] }}</p>
 				</li>
 				{% endif %}
 			{% endfor %}

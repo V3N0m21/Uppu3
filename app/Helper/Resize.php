@@ -33,15 +33,15 @@ class Resize
             
             switch ($this->mime) {
                 case 'image/jpeg':
-                    $img = @imagecreatefromjpeg($file);
+                    $img = imagecreatefromjpeg($file);
                     break;
 
                 case 'image/gif':
-                    $img = @imagecreatefromgif($file);
+                    $img = imagecreatefromgif($file);
                     break;
 
                 case 'image/png':
-                    $img = @imagecreatefrompng($file);
+                    $img = imagecreatefrompng($file);
                     break;
 
                 default:
