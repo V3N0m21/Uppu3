@@ -64,6 +64,10 @@ class User
         $this->hash = $hash;
     }
     
+    public function getHash() {
+        return $this->hash;
+    }
+
     public function getSalt() {
         return $this->salt;
     }

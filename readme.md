@@ -11,7 +11,8 @@ To deploy my filesharing app "Uppu3" on your local computer you have to go thror
 * mysql -u username -p -h localhost your-database-name < files.sql;
 * mysql -u username -p -h localhost your-database-name < users.sql;
 * mysql -u username -p -h localhost your-database-name < comments.sql;
-* to set up required tables in your database.
+
+to set up required tables in your database.
 
 Server requirements:
 
@@ -19,4 +20,5 @@ Your apache2 server has to allow usage of .htaccess files and also it has to hav
 Also you have to add following lines into site's *.conf file to make the project work correctly:
 
 XSendFile On
+
 XSendFilePath /path/to/your/project/Uppu3/public/upload/

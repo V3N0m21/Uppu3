@@ -34,6 +34,7 @@ class FileHelper
         $result = move_uploaded_file($tmpFile, $newFile);
         
         
+        
         if (in_array($fileResource->getExtension(), $pictures)) {
             $path = \Uppu3\Helper\FormatHelper::formatUploadResizeLink($id, $data['load']['name']);
             $resize = new \Uppu3\Helper\Resize;

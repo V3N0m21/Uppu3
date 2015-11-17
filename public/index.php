@@ -5,6 +5,7 @@ use Uppu3\Helper\FormatHelper;
 use Uppu3\Entity\Comment;
 use Uppu3\Helper\CommentHelper;
 use Uppu3\Helper\HashGenerator;
+use Uppu3\Helper\LoginHelper;
 
 
 $app = new \Slim\Slim(array('view' => new \Slim\Views\Twig(), 'templates.path' => '../app/templates'));
@@ -14,29 +15,50 @@ $app->container->singleton('em', function () use ($entityManager) {
     return $entityManager;
 });
 
-$app->get('/', function () use ($app) {
-    $cookie = $app->getCookie('salt');
-    if (!$cookie) {
-        $cookie = HashGenerator::generateSalt();
-        $app->setCookie('salt', $cookie, '1 month');
-    }
-    $user = $app->em->getRepository('Uppu3\Entity\User')->findOneBy(array('salt' => $cookie));
-    if (!$user) {
-        $login = '';
-    } 
-    else {
-        $login = $user->getLogin();
-    }
-    $page = 'index';
-    $flash = '';
-    $app->render('file_load.html', array('page' => $page, 'flash' => $flash, 'user' => $login));
+$app->container->singleton('loginHelper', function() use($app) {
+    return new LoginHelper;
 });
 
-$app->get('/test', function () use ($app) {
-    $cookie = $app->getCookie('salt');
-    var_dump($cookie);
-    die();
+$app->view->appendData( array(
+    'loginHelper' => $app->loginHelper
+    ));
+
+$app->get('/', function () use ($app) {
+    $page = 'index';
+    $flash = '';
+    $app->render('file_load.html', array('page' => $page, 'flash' => $flash));
 });
+
+$app->get('/login', function () use ($app) {
+    $page = 'login';
+    $flash = '';
+    $app->render('login_form.html', array('page' => $page, 'flash' => $flash));
+});
+
+$app->post('/login', function () use ($app) {
+    //var_dump($_POST);die();
+    if ($user = $app->em->getRepository('Uppu3\Entity\User')
+        ->findOneBy(array('login' => $_POST['login']))) {
+        if($user->getHash() === HashGenerator::generateHash($_POST['password'], $user->getSalt()))
+        {
+            $id = $user->getId();
+            $app->loginHelper->authenticateUser($user);
+            $app->redirect("users/$id");
+        } else {
+            $error = "Invalid login or password";   
+            $app->render('login_form.html', array('flash' => $error, 'data' => $_POST));
+            return;                   
+        }
+
+    } 
+    $error = "Invalid login or password";   
+    $app->render('login_form.html', array('flash' => $error, 'data' => $_POST));
+}); 
+
+$app->get('/logout', function () use ($app) {
+    $app->loginHelper->logout();
+    $app->redirect('/');
+});              
 
 $app->get('/register', function () use ($app) {
     $app->render('register.html');
@@ -54,6 +76,7 @@ $app->post('/register', function () use ($app) {
     if (!$validation->hasErrors()) {
         $user = \Uppu3\Helper\UserHelper::userSave($_POST, $cookie, $app->em);
         $id = $user->getId();
+        $app->loginHelper->authenticateUser($user);
         $app->redirect("users/$id");
     } 
     else {
@@ -72,7 +95,6 @@ $app->post('/', function () use ($app) {
         if (!$user) {
             $user = \Uppu3\Helper\UserHelper::saveAnonymousUser($cookie, $app->em);
         }
-        
         $file = \Uppu3\Helper\FileHelper::fileSave($_FILES, $user, $app->em);
         $id = $file->getId();
         $app->redirect("/view/$id");
@@ -111,7 +133,6 @@ $app->get('/download/:id/:name', function ($id, $name) use ($app) {
         return;
     } 
     else {
-
         $app->notFound();
     }
 });
@@ -122,10 +143,9 @@ $app->get('/users/', function () use ($app) {
     $users = $app->em->getRepository('Uppu3\Entity\User')->findBy([], ['created' => 'DESC']);
     $filesCount = [];
     foreach ($users as $user) {
-        $filesCount[$user->getId() ] = count($app->em->getRepository('Uppu3\Entity\File')->findByUploadedBy($user->getId()));
+        $filesCount[$user->getId() ] = count($app->em->getRepository('Uppu3\Entity\File')
+                                             ->findByUploadedBy($user->getId()));
     }
-    
-    //var_dump($filesCount);die();
     $app->render('users.html', array('users' => $users, 'page' => $page, 'cookie' => $cookie, 'filesCount' => $filesCount));
 });
 

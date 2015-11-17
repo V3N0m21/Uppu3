@@ -1,0 +1,24 @@
+{% extends 'layout.html' %}
+{% block content %}
+{% for error in errors  %}
+	<p>{{ error }}</p>
+{% endfor %}
+<div class="container-fluid col-md-offset-1">
+	<br>
+	{% if flash %}
+			<div class="alert alert-danger"><p>{{ flash }}</p></div>
+			{% endif %}
+	<form action="/login" method="post">
+	
+		<label>Логин или e-mail
+			<input type="text" class="form-control" id="login" name="login" placeholder="Введите имя" required>
+		</label><br>
+		<label>Пароль
+			<input type="password" class="form-control" id="password" name="password" placeholder="password" required>
+		</label><br>
+		<input type="submit" name="submit" class="btn btn-primary" value="Ввод" >
+	</form>
+	<p><a href="/register">Зарегистрироваться</a></p>
+</div>
+
+{% endblock %}

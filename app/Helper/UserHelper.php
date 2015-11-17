@@ -41,4 +41,5 @@ class UserHelper
         $em->flush();
         return $userModel;
     }
+    
 }
