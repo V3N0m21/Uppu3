@@ -4,15 +4,12 @@ namespace Uppu3\Helper;
 class LoginHelper
 {
 	protected $em;
-	public $user = null;
-    public $login;
-    public $isAuthorized = false;
+    public $logged = null;
 
-	public function __construct()
+	public function __construct($em)
 	{
-		if ($_COOKIE['user']) {
-            $this->isAuthorized = true;
-        }
+	 	$this->em = $em;
+        return $this->checkAuthorization($em);
 	}
 
 	protected function getUser($cookie)
@@ -24,13 +21,26 @@ class LoginHelper
 
     public function authenticateUser(\Uppu3\Entity\User $user)
     {
-        setcookie('user', $user->getLogin(), time() + 3600 *24*7);
-        $this->isAuthorized = true;
+        setcookie('id', $user->getId(), time() + 3600 *24*7);
+        setcookie('hash', $user->getHash(), time() + 3600 *24*7);
     }
 
+    private function checkAuthorization($app)
+    {
+        if (!isset($_COOKIE['id']) or !isset($_COOKIE['hash'])) {
+            return null;
+        } else {
+            $id = intval($_COOKIE['id']);
+            $hash = strval($_COOKIE['hash']);
+            $user = $this->em->getRepository('Uppu3\Entity\User')->findOneById($id);
+            if ($user->getHash() != $hash) return null;
+            $this->logged = true;
+    }
+}
     public function logout()
     {
-        setcookie('user', '');
+        setcookie('id', '');
+        setcookie('hash', '');
     }
 
 }

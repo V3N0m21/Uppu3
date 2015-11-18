@@ -14,7 +14,7 @@
 			<li class="{% if page == 'index' %}active{% endif %}"><a href="/">Главная</a></li>
 			<li class="{% if page == 'list' %}active{% endif %}"><a href="/list">Список файлов</a></li>
             <li class="{% if page == 'users' %}active{% endif %}"><a href="/users">Пользователи</a></li>
-            {%  if loginHelper.isAuthorized != true %}
+            {%  if loginHelper.logged != true %}
             <li class="{% if page == 'login' %}active{% endif %}"><a href="/login">Войти</a></li>
             {% else %}
             <li class="{% if page == 'login' %}active{% endif %}"><a href="/logout">Выйти</a></li>

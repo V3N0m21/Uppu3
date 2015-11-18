@@ -7,7 +7,6 @@ use Uppu3\Helper\CommentHelper;
 use Uppu3\Helper\HashGenerator;
 use Uppu3\Helper\LoginHelper;
 
-
 $app = new \Slim\Slim(array('view' => new \Slim\Views\Twig(), 'templates.path' => '../app/templates'));
 
 $app->container->singleton('em', function () use ($entityManager) {
@@ -16,12 +15,22 @@ $app->container->singleton('em', function () use ($entityManager) {
 });
 
 $app->container->singleton('loginHelper', function() use($app) {
-    return new LoginHelper;
+    return new LoginHelper($app->em);
 });
 
 $app->view->appendData( array(
     'loginHelper' => $app->loginHelper
     ));
+
+function checkAuthorization() {
+    $app = \Slim\Slim::getInstance();
+    $isLogged = $app->loginHelper;
+    if ($isLogged->logged != true) {
+        
+        $app->flash('error', 'Login required');
+        $app->redirect('/login');
+    }
+};
 
 $app->get('/', function () use ($app) {
     $page = 'index';
@@ -36,7 +45,6 @@ $app->get('/login', function () use ($app) {
 });
 
 $app->post('/login', function () use ($app) {
-    //var_dump($_POST);die();
     if ($user = $app->em->getRepository('Uppu3\Entity\User')
         ->findOneBy(array('login' => $_POST['login']))) {
         if($user->getHash() === HashGenerator::generateHash($_POST['password'], $user->getSalt()))
@@ -137,7 +145,7 @@ $app->get('/download/:id/:name', function ($id, $name) use ($app) {
     }
 });
 
-$app->get('/users/', function () use ($app) {
+$app->get('/users/', 'checkAuthorization', function () use ($app) {
     $cookie = $app->getCookie('salt');
     $page = 'users';
     $users = $app->em->getRepository('Uppu3\Entity\User')->findBy([], ['created' => 'DESC']);
@@ -157,7 +165,7 @@ $app->get('/users/:id/', function ($id) use ($app) {
     $app->render('user.html', array('user' => $user, 'files' => $files, 'helper' => $helper, 'page' => $page));
 });
 
-$app->get('/list', function () use ($app) {
+$app->get('/list', 'checkAuthorization', function () use ($app) {
     $helper = new FormatHelper();
     $page = 'list';
     $files = $app->em->getRepository('Uppu3\Entity\File')->findBy([], ['uploaded' => 'DESC'], 50, 0);
