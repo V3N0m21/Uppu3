@@ -22,6 +22,7 @@
 composer.phar
 
 public/upload/*.*
+public/upload/resize/*.*
 vendor/
 .idea/
  

@@ -34,6 +34,7 @@ class FormatHelper
     }
     
     static public function formatDownloadFile($id, $name) {
+        $name = urlencode($name);
         return "upload/" . $id . "-" . $name . "-txt";
     }
     static public function formatUploadLink($id, $name) {
