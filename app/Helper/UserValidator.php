@@ -5,10 +5,10 @@ class UserValidator
 {
     public $error;
     
-    public function validateData($data) {
-        $this->checkLogin($data['login']);
+    public function validateData($user, $data) {
+        $this->checkLogin($user->getLogin());
         $this->checkPassword($data['password'], $data['confirmation']);
-        $this->checkEmail($data['email']);
+        $this->checkEmail($user->getEmail());
     }
     
     public function hasErrors() {

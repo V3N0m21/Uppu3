@@ -86,11 +86,13 @@ $app->post('/register', function () use ($app) {
         $app->setCookie('salt', $cookie, '1 month');
     }
     $validation = new \Uppu3\Helper\UserValidator;
-    $validation->validateData($_POST);
+    $userHelper = new \Uppu3\Helper\UserHelper($_POST, $app->em, $cookie);
+    $user = $userHelper->user;
+    $validation->validateData($user, $_POST);
     if (!$validation->hasErrors()) {
-        $user = \Uppu3\Helper\UserHelper::userSave($_POST, $cookie, $app->em);
-        $id = $user->getId();
-        $app->loginHelper->authenticateUser($user);
+        $userHelper->userSave($_POST['password'], $cookie, $app->em);
+        $id = $userHelper->user->getId();
+        $app->loginHelper->authenticateUser($userHelper->user);
         $app->redirect("users/$id");
     } 
     else {
@@ -109,7 +111,8 @@ $app->post('/', function () use ($app) {
         if (!$user) {
             $user = \Uppu3\Helper\UserHelper::saveAnonymousUser($cookie, $app->em);
         }
-        $file = \Uppu3\Helper\FileHelper::fileSave($_FILES, $user, $app->em);
+        $fileHelper = new \Uppu3\Helper\FileHelper($user, $app->em);
+        $file = $fileHelper->fileSave($_FILES);
         $id = $file->getId();
         $app->redirect("/view/$id");
     } 

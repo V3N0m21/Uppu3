@@ -5,9 +5,10 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
-
-$evm = doctrineInit();
-$config = createDoctrineConfig();
+$cache = getCache();
+$cachedAnnotationReader = getAnnotationReader($cache);
+$evm = doctrineInit($cachedAnnotationReader);
+$config = createDoctrineConfig($cache, $cachedAnnotationReader);
 
 $dbconfig = parse_ini_file('config.ini');
 
@@ -23,29 +24,47 @@ $conn = array(
 $entityManager = EntityManager::create($conn, $config, $evm);
 
 
-function doctrineInit() {
+function doctrineInit($cachedAnnotationReader) {
 
     $evm = new Doctrine\Common\EventManager();
-    addTreeExtension($evm);
+    addTreeExtension($evm,$cachedAnnotationReader);
     Type::addType('mediainfotype', 'Uppu3\Type\MediaInfoType');
     return $evm;
 }
-function createDoctrineConfig()
-{
-    AnnotationRegistry::registerFile(dirname(__DIR__)."/vendor/doctrine/orm/lib/Doctrine/ORM/Mapping/Driver/DoctrineAnnotations.php");
-//$cache = new Doctrine\Common\Cache\ArrayCache;
+
+function getCache() {
     if (extension_loaded('apc')) {
         $cache = new \Doctrine\Common\Cache\ApcCache();
     } else {
-        $cache = new \Doctrine\Common\Cache\MemcacheCache();
+        $cache = new \Doctrine\Common\Cache\PhpFileCache();
     }
-    $isDevMode = true;
+    return $cache;
+}
 
+function getAnnotationReader($cache){
     $annotationReader = new AnnotationReader;
     $cachedAnnotationReader = new Doctrine\Common\Annotations\CachedReader(
         $annotationReader, // use reader
         $cache // and a cache driver
     );
+    return $cachedAnnotationReader;
+}
+function createDoctrineConfig($cache, $cachedAnnotationReader)
+{
+    AnnotationRegistry::registerFile(dirname(__DIR__)."/vendor/doctrine/orm/lib/Doctrine/ORM/Mapping/Driver/DoctrineAnnotations.php");
+//$cache = new Doctrine\Common\Cache\ArrayCache;
+//    if (extension_loaded('apc')) {
+//        $cache = new \Doctrine\Common\Cache\ApcCache();
+//    } else {
+//        $cache = new \Doctrine\Common\Cache\PhpFileCache();
+//    }
+    $isDevMode = true;
+
+//    $annotationReader = new AnnotationReader;
+//    $cachedAnnotationReader = new Doctrine\Common\Annotations\CachedReader(
+//        $annotationReader, // use reader
+//        $cache // and a cache driver
+//    );
 
     $annotationDriver = new Doctrine\ORM\Mapping\Driver\AnnotationDriver(
         $cachedAnnotationReader, // our cached annotation reader
@@ -74,7 +93,7 @@ function createDoctrineConfig()
     return $config;
 }
 
-function addTreeExtension($evm) {
+function addTreeExtension($evm, $cachedAnnotationReader) {
     $treeListener = new Gedmo\Tree\TreeListener;
     $treeListener->setAnnotationReader($cachedAnnotationReader);
     $evm->addEventSubscriber($treeListener);

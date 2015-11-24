@@ -17,20 +17,34 @@ class UserHelper
     // $userResource->setPassword($password);
     // return $userResource;
     // }
-    
-    static public function userSave($data, $cookie, $em) {
+    private $em;
+    public $user;
+    function __construct($data,\Doctrine\ORM\EntityManager $em, $cookie) {
+        $this->em = $em;
         $userResource = $em->getRepository('Uppu3\Entity\User')->findOneBy(array('salt' => $cookie));
         if (!$userResource) {
-            $userResource = self::saveAnonymousUser($cookie, $em);
+        $this->user = new User;
+        } else {
+        $this->user = $userResource;
         }
-        $userResource->setLogin($data['login']);
-        $userResource->setEmail($data['email']);
-        $userResource->setCreatedNow();
-        $hash = HashGenerator::generateHash($data['password'], $cookie);
-        $userResource->setHash($hash);
-        $em->persist($userResource);
+        $this->user->setLogin($data['login']);
+        $this->user->setEmail($data['email']);
+        return $this->user;
+    }
+
+    public function userSave($password, $cookie, $em) {
+//        $userResource = $em->getRepository('Uppu3\Entity\User')->findOneBy(array('salt' => $cookie));
+//        if (!$userResource) {
+//            $userResource = self::saveAnonymousUser($cookie, $em);
+//        }
+//        $userResource->setLogin($data['login']);
+//        $userResource->setEmail($data['email']);
+        $this->user->setCreatedNow();
+        $hash = HashGenerator::generateHash($password, $cookie);
+        $this->user->setHash($hash);
+        $em->persist($this->user);
         $em->flush();
-        return $userResource;
+        return $this->user;
     }
     
     static public function saveAnonymousUser($salt, $em) {

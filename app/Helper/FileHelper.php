@@ -4,8 +4,16 @@ use Uppu3\Entity\File;
 
 class FileHelper
 {
-    
-    static public function fileSave($data, $user, $em) {
+    private $em;
+    private $user;
+
+    function __construct(\Uppu3\Entity\User $user, \Doctrine\ORM\EntityManager $em)
+    {
+        $this->user = $user;
+        $this->em = $em;
+    }
+
+    public function fileSave($data) {
         $pictures = array('image/jpeg', 'image/gif', 'image/png');
         $fileResource = new File;
 
@@ -24,10 +32,10 @@ class FileHelper
         //$mediainfo = json_encode($mediainfo);
         $fileResource->setMediainfo($mediainfo);
         $fileResource->setUploaded();
-        $fileResource->setUploadedBy($user);
+        $fileResource->setUploadedBy($this->user);
         
-        $em->persist($fileResource);
-        $em->flush();
+        $this->em->persist($fileResource);
+        $this->em->flush();
         $id = $fileResource->getId();
         $tmpFile = $data['load']['tmp_name'];
         $newFile = \Uppu3\Helper\FormatHelper::formatUploadLink($id, $data['load']['name']);
