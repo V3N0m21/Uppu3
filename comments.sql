@@ -1,3 +1,4 @@
+# noinspection SqlNoDataSourceInspectionForFile
 -- phpMyAdmin SQL Dump
 -- version 4.0.10deb1
 -- http://www.phpmyadmin.net
@@ -40,7 +41,6 @@ CREATE TABLE IF NOT EXISTS `comments` (
   KEY `parent` (`parent`),
   KEY `children` (`children`),
   KEY `fileId` (`fileId`),
-  KEY `fileId_2` (`fileId`),
   KEY `path` (`path`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 

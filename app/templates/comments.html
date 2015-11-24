@@ -8,7 +8,7 @@
                  <ul style="list-style:none;">
 				<li>
 			<p>{{ comment.posted|date('d-m-y H:i')  }}</p>
-            <p><i>{{ comment.user }} написал:</i></p>
+            <p><i>{{ users[comment.user|e] }} написал:</i></p>
             <p>> {{ comment.comment }}</p>
             <p><span>ответить</span></p>
 				</li>
@@ -19,7 +19,7 @@
 			{# <div style="border: 1px solid black; background:black; color:gold; padding:5px;margin:5px;">
 			<p>Parent {{ comment.id }}</p>
 			<p>{{ comment.posted|date('d-m-y H:i')  }}</p>
-			<p><i>{{ comment.user }} написал:</i></p>
+			<p><i>{{ users[comment.user|e] }} написал:</i></p>
 			<p style="color:green">> {{ comment.comment }}</p>
 			</div> #}
             </div>

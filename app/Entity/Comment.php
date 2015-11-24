@@ -24,8 +24,9 @@ class Comment
     private $path;
     
     /**
+     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\JoinColumn(name="user", referencedColumnName="id")
      *
-     * @ORM\Column(name="user", type="string", length=64)
      */
     private $user;
     
@@ -71,8 +72,8 @@ class Comment
     public function getUser() {
         return $this->user;
     }
-    
-    public function setUser($user) {
+
+    public function setUser(\Uppu3\Entity\User $user) {
         $this->user = $user;
     }
     

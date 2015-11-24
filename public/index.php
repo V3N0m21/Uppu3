@@ -18,8 +18,14 @@ $app->container->singleton('loginHelper', function() use($app) {
     return new LoginHelper($app->em);
 });
 
+$app->container->singleton('currentUser', function() use($app) {
+    $helper = new LoginHelper($app->em);
+    return $helper->getCurrentUser();
+});
 $app->view->appendData( array(
-    'loginHelper' => $app->loginHelper
+    'loginHelper' => $app->loginHelper,
+    'currentUser' => $app->currentUser,
+    'message' => ''
     ));
 
 function checkAuthorization() {
@@ -34,8 +40,8 @@ function checkAuthorization() {
 
 $app->get('/', function () use ($app) {
     $page = 'index';
-    $flash = '';
-    $app->render('file_load.html', array('page' => $page, 'flash' => $flash));
+    $message = 'ololo';
+    $app->render('file_load.html', array('page' => $page));
 });
 
 $app->get('/login', function () use ($app) {
@@ -121,8 +127,14 @@ $app->get('/view/:id/', function ($id) use ($app) {
     }
     $helper = new FormatHelper();
     $comments = $app->em->getRepository('Uppu3\Entity\Comment')->findBy(array('fileId' => $id), array('path' => 'ASC'));
+    $users = [];
+    foreach ($comments as $comment) {
+        $id = $comment->getUser();
+        $user = $app->em->getRepository('Uppu3\Entity\User')->findOneById($id);
+        $users[$user->getId()] = $user->getLogin();
+    };
     $info = $file->getMediainfo();
-    $app->render('view.html', array('file' => $file, 'user' => $user, 'info' => $info, 'helper' => $helper, 'comments' => $comments));
+    $app->render('view.html', array('file' => $file, 'users' => $users, 'user' => $user, 'info' => $info, 'helper' => $helper, 'comments' => $comments));
 });
 
 $app->get('/comment/:id/', function ($id) use ($app) {
@@ -181,9 +193,16 @@ $app->get('/list', 'checkAuthorization', function () use ($app) {
 $app->post('/send/:id', function ($id) use ($app) {
     $parent = isset($_POST['parent']) ? $app->em->find('Uppu3\Entity\Comment', $_POST['parent']) : null;
     $file = $app->em->find('Uppu3\Entity\File', $id);
-    CommentHelper::saveComment($_POST, $app->em, $parent, $file);
+    $user = $app->em->find('Uppu3\Entity\User', $_POST['userId']);
+    CommentHelper::saveComment($_POST, $app->em, $parent, $file, $user);
     $comments = $app->em->getRepository('Uppu3\Entity\Comment')->findBy(array('fileId' => $id), array('path' => 'ASC'));
-    $app->render('comments.html', array('comments' => $comments));
+    $users = [];
+    foreach ($comments as $comment) {
+        $id = $comment->getUser();
+        $user = $app->em->getRepository('Uppu3\Entity\User')->findOneById($id);
+        $users[$user->getId()] = $user->getLogin();
+    };
+    $app->render('comments.html', array('comments' => $comments, 'users' => $users));
 });
 
 $app->post('/ajaxComments/:id', function ($id) use ($app) {

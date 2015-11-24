@@ -50,12 +50,13 @@ $evm->addEventSubscriber($treeListener);
 $evm->addEventSubscriber(new Doctrine\DBAL\Event\Listeners\MysqlSessionInit());
 
  //$deleted = $cache->deleteAll();
+$dbconfig = parse_ini_file('config.ini');
 
 $conn = array(
 	'driver' => 'pdo_mysql',
-	'user' => 'root',
-	'password' => 'vxzNO9',
-	'dbname' => 'publications',
+	'user' => $dbconfig['user'],
+	'password' => $dbconfig['password'],
+	'dbname' => $dbconfig['dbname'],
 	'mapping_types' => array(
 		'enum' => 'string'
 		)

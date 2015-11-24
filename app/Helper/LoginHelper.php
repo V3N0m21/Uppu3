@@ -36,7 +36,17 @@ class LoginHelper
             if ($user->getHash() != $hash) return null;
             $this->logged = true;
     }
-}
+    }
+
+    public function getCurrentUser() {
+        if ($this->logged) {
+            $id = intval($_COOKIE['id']);
+            $user = $this->em->getRepository('Uppu3\Entity\User')->findOneById($id);
+            return $user;
+        }
+    }
+
+
     public function logout()
     {
         setcookie('id', '');
