@@ -72,6 +72,10 @@ class File
     public function getUploadedBy() {
         return $this->uploadedBy;
     }
+
+    public function getUploader() {
+
+    }
     
     public function setUploadedBy(\Uppu3\Entity\User $user) {
         $this->uploadedBy = $user;

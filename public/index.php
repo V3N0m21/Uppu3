@@ -32,9 +32,7 @@ function checkAuthorization()
     $app = \Slim\Slim::getInstance();
     $isLogged = $app->loginHelper;
     if ($isLogged->logged != true) {
-
-        $app->flash('error', 'Login required');
-        $app->redirect('/login');
+        $app->redirect($app->urlFor('login', array('from' => 'josh')));
     }
 }
 
@@ -45,7 +43,7 @@ $app->map('/', function () use ($app) {
         $app->render('file_load.html', array('page' => $page));
         $app->stop();
     }
-    if (file_exists($_FILES['load']['tmp_name'])) {
+    if (file_exists($_FILES['load']['tmp_name']) && $_FILES['load']['error'] == 0) {
         $cookie = $app->getCookie('salt');
         if (!$cookie) {
             $cookie = HashGenerator::generateSalt();
@@ -72,9 +70,9 @@ $app->map('/login', function () use ($app) {
         $app->render('login_form.html', array('page' => $page, 'flash' => $flash));
     } else {
         if ($user = $app->em->getRepository('Uppu3\Entity\User')
-            ->findOneBy(array('login' => $_POST['login']))
+            ->findOneBy(array('login' => $app->request->params('login')))
         ) {
-            if ($user->getHash() === HashGenerator::generateHash($_POST['password'], $user->getSalt())) {
+            if ($user->getHash() === HashGenerator::generateHash($app->request->params('password'), $user->getSalt())) {
                 $id = $user->getId();
                 $app->loginHelper->authenticateUser($user);
                 $app->redirect("users/$id");
@@ -88,7 +86,7 @@ $app->map('/login', function () use ($app) {
         $error = "Invalid login or password";
         $app->render('login_form.html', array('message' => $error, 'data' => $_POST));
     }
-})->via('GET', 'POST');
+})->via('GET', 'POST')->name('login');
 
 $app->get('/logout', function () use ($app) {
     $app->loginHelper->logout();
@@ -104,12 +102,12 @@ $app->map('/register', function () use ($app) {
             $cookie = HashGenerator::generateSalt();
             $app->setCookie('salt', $cookie, '1 month');
         }
-        $validation = new \Uppu3\Helper\UserValidator;
+        $validation = new \Uppu3\Helper\DataValidator;
         $userHelper = new \Uppu3\Helper\UserHelper($_POST, $app->em, $cookie);
         $user = $userHelper->user;
-        $validation->validateData($user, $_POST);
+        $validation->validateUser($user, $_POST);
         if (!$validation->hasErrors()) {
-            $userHelper->userSave($_POST['password'], $cookie, $app->em);
+            $userHelper->userSave($app->request->params('password'), $cookie, $app->em);
             $id = $userHelper->user->getId();
             $app->loginHelper->authenticateUser($userHelper->user);
             $app->redirect("users/$id");
@@ -128,14 +126,7 @@ $app->get('/view/:id/', function ($id) use ($app) {
     }
     $helper = new FormatHelper();
     $comments = $app->em->getRepository('Uppu3\Entity\Comment')->findBy(array('fileId' => $id), array('path' => 'ASC'));
-    $users = [];
-    foreach ($comments as $comment) {
-        $id = $comment->getUser();
-        $user = $app->em->getRepository('Uppu3\Entity\User')->findOneById($id);
-        $users[$user->getId()] = $user->getLogin();
-    };
-    $info = $file->getMediainfo();
-    $app->render('view.html', array('file' => $file, 'users' => $users, 'user' => $user, 'info' => $info, 'helper' => $helper, 'comments' => $comments));
+    $app->render('view.html', array('file' => $file, 'user' => $user, 'helper' => $helper, 'comments' => $comments));
 });
 
 $app->get('/comment/:id/', function ($id) use ($app) {
@@ -181,28 +172,22 @@ $app->get('/list', 'checkAuthorization', function () use ($app) {
     $helper = new FormatHelper();
     $page = 'list';
     $files = $app->em->getRepository('Uppu3\Entity\File')->findBy([], ['uploaded' => 'DESC'], 50, 0);
-    $users = [];
-    foreach ($files as $file) {
-        $id = $file->getUploadedBy();
-        $user = $app->em->getRepository('Uppu3\Entity\User')->findOneById($id);
-        $users[$user->getId()] = $user->getLogin();
-    };
-    $app->render('list.html', array('files' => $files, 'users' => $users, 'page' => $page, 'helper' => $helper));
+    $app->render('list.html', array('files' => $files, 'page' => $page, 'helper' => $helper));
 });
 
 $app->post('/send/:id', function ($id) use ($app) {
-    $parent = isset($_POST['parent']) ? $app->em->find('Uppu3\Entity\Comment', $_POST['parent']) : null;
+    $parent = isset($_POST['parent']) ? $app->em->find('Uppu3\Entity\Comment', $app->request->params('parent')) : null;
     $file = $app->em->find('Uppu3\Entity\File', $id);
-    $user = $app->em->find('Uppu3\Entity\User', $_POST['userId']);
-    CommentHelper::saveComment($_POST, $app->em, $parent, $file, $user);
-    $comments = $app->em->getRepository('Uppu3\Entity\Comment')->findBy(array('fileId' => $id), array('path' => 'ASC'));
-    $users = [];
-    foreach ($comments as $comment) {
-        $id = $comment->getUser();
-        $user = $app->em->getRepository('Uppu3\Entity\User')->findOneById($id);
-        $users[$user->getId()] = $user->getLogin();
+    $user = $app->em->find('Uppu3\Entity\User', $app->request->params('userId'));
+    $validation = new \Uppu3\Helper\DataValidator;
+    $commentHelper = new CommentHelper($_POST, $app->em, $parent, $file, $user);
+    $comment = $commentHelper->comment;
+    $validation->validateComment($comment);
+    if (!$validation->hasErrors()) {
+      $commentHelper->commentSave();
     };
-    $app->render('comments.html', array('comments' => $comments, 'users' => $users));
+    $comments = $app->em->getRepository('Uppu3\Entity\Comment')->findBy(array('fileId' => $id), array('path' => 'ASC'));
+    $app->render('comments.html', array('comments' => $comments));
 });
 
 $app->post('/ajaxComments/:id', function ($id) use ($app) {

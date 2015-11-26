@@ -16,7 +16,7 @@
   {# <h4>Post Your Comment:</h4>
   <form action="/send/{{ file.id }}" method="post">
     <label for="name">Ваше имя</label><br>
-    <input type='text' name="name" value="{{ users[comment.user|e] }}"><br>
+    <input type='text' name="name" value="{{ comment.user.getLogin }}"><br>
     <label for="comment">Your Comment</label><br>
     <textarea name="comment" id="commentBody"></textarea><br>
     <input type="hidden" name="fileId" value="{{ file.id }}">
@@ -36,12 +36,12 @@
 
 
      <div class="comment" id="comment{{comment.id}}"
-     onclick="appendPostForm({{comment.id}}, '{{  users[comment.user|e] }}', postForm{{comment.id}})"
+     onclick="appendPostForm({{comment.id}}, '{{  comment.user.getLogin }}', postForm{{comment.id}})"
      style="margin-left:{{ (comment.level -1) * 25 }}px;">
      <ul style="list-style:none;">
         <li>
          <p>{{ comment.posted|date('d-m-y H:i')  }}</p>
-         <p><i>{{  users[comment.user|e]  }} написал:</i></p>
+         <p><i>{{  comment.user.getLogin  }} написал:</i></p>
          <p>> {{ comment.comment}}</p>
          <p><span>reply</span></p>
      </li>

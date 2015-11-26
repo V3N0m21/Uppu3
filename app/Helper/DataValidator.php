@@ -1,18 +1,30 @@
 <?php
 namespace Uppu3\Helper;
 
-class UserValidator
+class DataValidator
 {
     public $error;
     
-    public function validateData($user, $data) {
+    public function validateUser(\Uppu3\Entity\User $user, $data) {
         $this->checkLogin($user->getLogin());
         $this->checkPassword($data['password'], $data['confirmation']);
         $this->checkEmail($user->getEmail());
     }
+
+    public function validateComment(\Uppu3\Entity\Comment $comment) {
+        $this->checkComment($comment->getComment());
+    }
     
     public function hasErrors() {
         (!empty($error)) ? true : false;
+    }
+
+    private function checkComment($comment)
+    {
+        if ($this->notEmpty($comment)) {
+            return true;
+        }
+        return $this->error['comment'] = "Comment should not be empty";
     }
     
     private function checkLogin($login) {

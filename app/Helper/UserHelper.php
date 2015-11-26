@@ -6,17 +6,7 @@ use Uppu3\Entity\User;
 class UserHelper
 {
     
-    // static public function userData($data) {
-    // $userResource = new User;
-    // $userResource->setLogin($data['login']);
-    // $userResource->setEmail($data['email']);
-    // $userResource->setCreated();
-    // $salt = HashGenerator::generateSalt();
-    // $userResource->setSalt($salt);
-    // $password = HashGenerator::generateHash($data['password'], $salt);
-    // $userResource->setPassword($password);
-    // return $userResource;
-    // }
+
     private $em;
     public $user;
     function __construct($data,\Doctrine\ORM\EntityManager $em, $cookie) {
@@ -33,12 +23,6 @@ class UserHelper
     }
 
     public function userSave($password, $cookie, $em) {
-//        $userResource = $em->getRepository('Uppu3\Entity\User')->findOneBy(array('salt' => $cookie));
-//        if (!$userResource) {
-//            $userResource = self::saveAnonymousUser($cookie, $em);
-//        }
-//        $userResource->setLogin($data['login']);
-//        $userResource->setEmail($data['email']);
         $this->user->setCreatedNow();
         $hash = HashGenerator::generateHash($password, $cookie);
         $this->user->setHash($hash);
