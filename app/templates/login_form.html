@@ -5,8 +5,8 @@
 {% endfor %}
 <div class="container-fluid col-md-offset-1">
 	<br>
-	{% if flash.error %}
-			<div class="alert alert-danger"><p>{{ flash.error }}</p></div>
+	{% if message %}
+			<div class="alert alert-danger"><p>{{ message }}</p></div>
 			{% endif %}
 	<form action="/login" method="post">
 	

@@ -2,7 +2,6 @@
 require '../vendor/autoload.php';
 require_once '../app/bootstrap.php';
 use Uppu3\Helper\FormatHelper;
-use Uppu3\Entity\Comment;
 use Uppu3\Helper\CommentHelper;
 use Uppu3\Helper\HashGenerator;
 use Uppu3\Helper\LoginHelper;
@@ -14,93 +13,38 @@ $app->container->singleton('em', function () use ($entityManager) {
     return $entityManager;
 });
 
-$app->container->singleton('loginHelper', function() use($app) {
+$app->container->singleton('loginHelper', function () use ($app) {
     return new LoginHelper($app->em);
 });
 
-$app->container->singleton('currentUser', function() use($app) {
+$app->container->singleton('currentUser', function () use ($app) {
     $helper = new LoginHelper($app->em);
     return $helper->getCurrentUser();
 });
-$app->view->appendData( array(
+$app->view->appendData(array(
     'loginHelper' => $app->loginHelper,
     'currentUser' => $app->currentUser,
     'message' => ''
-    ));
+));
 
-function checkAuthorization() {
+function checkAuthorization()
+{
     $app = \Slim\Slim::getInstance();
     $isLogged = $app->loginHelper;
     if ($isLogged->logged != true) {
-        
+
         $app->flash('error', 'Login required');
         $app->redirect('/login');
     }
-};
+}
 
-$app->get('/', function () use ($app) {
+;
+$app->map('/', function () use ($app) {
     $page = 'index';
-    $message = 'ololo';
-    $app->render('file_load.html', array('page' => $page));
-});
-
-$app->get('/login', function () use ($app) {
-    $page = 'login';
-    $flash = '';
-    $app->render('login_form.html', array('page' => $page, 'flash' => $flash));
-});
-
-$app->post('/login', function () use ($app) {
-    if ($user = $app->em->getRepository('Uppu3\Entity\User')
-        ->findOneBy(array('login' => $_POST['login']))) {
-        if($user->getHash() === HashGenerator::generateHash($_POST['password'], $user->getSalt()))
-        {
-            $id = $user->getId();
-            $app->loginHelper->authenticateUser($user);
-            $app->redirect("users/$id");
-        } else {
-            $error = "Invalid login or password";   
-            $app->render('login_form.html', array('flash' => $error, 'data' => $_POST));
-            return;                   
-        }
-
-    } 
-    $error = "Invalid login or password";   
-    $app->render('login_form.html', array('flash' => $error, 'data' => $_POST));
-}); 
-
-$app->get('/logout', function () use ($app) {
-    $app->loginHelper->logout();
-    $app->redirect('/');
-});              
-
-$app->get('/register', function () use ($app) {
-    $app->render('register.html');
-});
-
-$app->post('/register', function () use ($app) {
-
-    $cookie = $app->getCookie('salt');
-    if (!$cookie) {
-        $cookie = HashGenerator::generateSalt();
-        $app->setCookie('salt', $cookie, '1 month');
+    if ($app->request->isGet()) {
+        $app->render('file_load.html', array('page' => $page));
+        $app->stop();
     }
-    $validation = new \Uppu3\Helper\UserValidator;
-    $userHelper = new \Uppu3\Helper\UserHelper($_POST, $app->em, $cookie);
-    $user = $userHelper->user;
-    $validation->validateData($user, $_POST);
-    if (!$validation->hasErrors()) {
-        $userHelper->userSave($_POST['password'], $cookie, $app->em);
-        $id = $userHelper->user->getId();
-        $app->loginHelper->authenticateUser($userHelper->user);
-        $app->redirect("users/$id");
-    } 
-    else {
-        $app->render('register.html', array('errors' => $validation->error, 'data' => $_POST));
-    };
-});
-
-$app->post('/', function () use ($app) {
     if (file_exists($_FILES['load']['tmp_name'])) {
         $cookie = $app->getCookie('salt');
         if (!$cookie) {
@@ -115,12 +59,66 @@ $app->post('/', function () use ($app) {
         $file = $fileHelper->fileSave($_FILES);
         $id = $file->getId();
         $app->redirect("/view/$id");
-    } 
-    else {
-        $flash = "Вы не выбрали файл";
-        $app->render('file_load.html', array('flash' => $flash));
+    } else {
+        $message = "You didn't select any file";
+        $app->render('file_load.html', array('page' => $page, 'message' => $message));
     }
+})->via('GET', 'POST');
+
+$app->map('/login', function () use ($app) {
+    if ($app->request->isGet()) {
+        $page = 'login';
+        $flash = '';
+        $app->render('login_form.html', array('page' => $page, 'flash' => $flash));
+    } else {
+        if ($user = $app->em->getRepository('Uppu3\Entity\User')
+            ->findOneBy(array('login' => $_POST['login']))
+        ) {
+            if ($user->getHash() === HashGenerator::generateHash($_POST['password'], $user->getSalt())) {
+                $id = $user->getId();
+                $app->loginHelper->authenticateUser($user);
+                $app->redirect("users/$id");
+            } else {
+                $error = "Invalid login or password";
+                $app->render('login_form.html', array('message' => $error, 'data' => $_POST));
+                return;
+            }
+
+        }
+        $error = "Invalid login or password";
+        $app->render('login_form.html', array('message' => $error, 'data' => $_POST));
+    }
+})->via('GET', 'POST');
+
+$app->get('/logout', function () use ($app) {
+    $app->loginHelper->logout();
+    $app->redirect('/');
 });
+
+$app->map('/register', function () use ($app) {
+    if ($app->request->isGet()) {
+        $app->render('register.html');
+    } else {
+        $cookie = $app->getCookie('salt');
+        if (!$cookie) {
+            $cookie = HashGenerator::generateSalt();
+            $app->setCookie('salt', $cookie, '1 month');
+        }
+        $validation = new \Uppu3\Helper\UserValidator;
+        $userHelper = new \Uppu3\Helper\UserHelper($_POST, $app->em, $cookie);
+        $user = $userHelper->user;
+        $validation->validateData($user, $_POST);
+        if (!$validation->hasErrors()) {
+            $userHelper->userSave($_POST['password'], $cookie, $app->em);
+            $id = $userHelper->user->getId();
+            $app->loginHelper->authenticateUser($userHelper->user);
+            $app->redirect("users/$id");
+        } else {
+            $app->render('register.html', array('errors' => $validation->error, 'data' => $_POST));
+        };
+    }
+})->via('GET', 'POST');
+
 
 $app->get('/view/:id/', function ($id) use ($app) {
     $file = $app->em->find('Uppu3\Entity\File', $id);
@@ -148,14 +146,13 @@ $app->get('/comment/:id/', function ($id) use ($app) {
 $app->get('/download/:id/:name', function ($id, $name) use ($app) {
     $file = $app->em->find('Uppu3\Entity\File', $id);
     $name = FormatHelper::formatDownloadFile($id, $file->getName());
-    
+
     if (file_exists($name)) {
         header("X-Sendfile:" . realpath(dirname(__FILE__)) . '/' . $name);
         header("Content-Type: application/octet-stream");
         header("Content-Disposition: attachment");
         return;
-    } 
-    else {
+    } else {
         $app->notFound();
     }
 });
@@ -166,8 +163,8 @@ $app->get('/users/', 'checkAuthorization', function () use ($app) {
     $users = $app->em->getRepository('Uppu3\Entity\User')->findBy([], ['created' => 'DESC']);
     $filesCount = [];
     foreach ($users as $user) {
-        $filesCount[$user->getId() ] = count($app->em->getRepository('Uppu3\Entity\File')
-                                             ->findByUploadedBy($user->getId()));
+        $filesCount[$user->getId()] = count($app->em->getRepository('Uppu3\Entity\File')
+            ->findByUploadedBy($user->getId()));
     }
     $app->render('users.html', array('users' => $users, 'page' => $page, 'cookie' => $cookie, 'filesCount' => $filesCount));
 });
@@ -188,7 +185,7 @@ $app->get('/list', 'checkAuthorization', function () use ($app) {
     foreach ($files as $file) {
         $id = $file->getUploadedBy();
         $user = $app->em->getRepository('Uppu3\Entity\User')->findOneById($id);
-        $users[$user->getId() ] = $user->getLogin();
+        $users[$user->getId()] = $user->getLogin();
     };
     $app->render('list.html', array('files' => $files, 'users' => $users, 'page' => $page, 'helper' => $helper));
 });
