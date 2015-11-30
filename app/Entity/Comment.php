@@ -29,7 +29,7 @@ class Comment
      *
      */
     private $user;
-    
+
     /**
      * @Gedmo\TreeParent
      * @ORM\ManyToOne(targetEntity="Comment", inversedBy="children")

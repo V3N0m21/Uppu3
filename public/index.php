@@ -152,6 +152,9 @@ $app->get('/users/', 'checkAuthorization', function () use ($app) {
     $cookie = $app->getCookie('salt');
     $page = 'users';
     $users = $app->em->getRepository('Uppu3\Entity\User')->findBy([], ['created' => 'DESC']);
+//    $filesCount = $app->em->createQuery('SELECT IDENTITY(u.uploadedBy), count(u.uploadedBy) FROM Uppu3\Entity\File u GROUP BY u.uploadedBy');
+//    $filesCount = $filesCount->getArrayResult();
+//    var_dump($filesCount); die();
     $filesCount = [];
     foreach ($users as $user) {
         $filesCount[$user->getId()] = count($app->em->getRepository('Uppu3\Entity\File')

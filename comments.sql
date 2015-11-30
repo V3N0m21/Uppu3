@@ -39,6 +39,7 @@ CREATE TABLE IF NOT EXISTS `comments` (
   `fileId` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `parent` (`parent`),
+-- children is a required part of the Doctrine\Tree implementation
   KEY `children` (`children`),
   KEY `fileId` (`fileId`),
   KEY `path` (`path`)
