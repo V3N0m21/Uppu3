@@ -24,6 +24,7 @@ class UserHelper
 
     public function userSave($password, $cookie, $em) {
         $this->user->setCreatedNow();
+        $this->user->setSalt($cookie);
         $hash = HashGenerator::generateHash($password, $cookie);
         $this->user->setHash($hash);
         $em->persist($this->user);
