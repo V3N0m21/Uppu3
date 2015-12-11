@@ -98,10 +98,10 @@ $app->map('/register', function () use ($app) {
     if ($app->request->isGet()) {
         $app->render('register.html');
     } else {
-        $cookie = $app->getCookie('salt');
+        $cookie = $app->getCookie('token');
         if (!$cookie) {
             $cookie = HashGenerator::generateSalt();
-            $app->setCookie('salt', $cookie, '1 month');
+            $app->setCookie('token', $cookie, '1 month');
         }
         $validation = new \Uppu3\Helper\DataValidator;
         $userHelper = new \Uppu3\Helper\UserHelper($_POST, $app->em, $cookie);
@@ -150,7 +150,7 @@ $app->get('/download/:id/:name', function ($id, $name) use ($app) {
 });
 
 $app->get('/users/', 'checkAuthorization', function () use ($app) {
-    $cookie = $app->getCookie('salt');
+    $cookie = $app->getCookie('token');
     $page = 'users';
     $users = $app->em->getRepository('Uppu3\Entity\User')->findBy([], ['created' => 'DESC']);
     $filesCount = $app->em->createQuery('SELECT IDENTITY(u.uploadedBy), count(u.uploadedBy) FROM Uppu3\Entity\File u GROUP BY u.uploadedBy');

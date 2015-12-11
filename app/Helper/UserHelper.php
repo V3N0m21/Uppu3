@@ -11,7 +11,7 @@ class UserHelper
     public $user;
     function __construct($data,\Doctrine\ORM\EntityManager $em, $cookie) {
         $this->em = $em;
-        $userResource = $em->getRepository('Uppu3\Entity\User')->findOneBy(array('salt' => $cookie));
+        $userResource = $em->getRepository('Uppu3\Entity\User')->findOneBy(array('token' => $cookie));
         if (!$userResource) {
         $this->user = new User;
         } else {
@@ -24,17 +24,20 @@ class UserHelper
 
     public function userSave($password, $cookie, $em) {
         $this->user->setCreatedNow();
-        $this->user->setSalt($cookie);
-        $hash = HashGenerator::generateHash($password, $cookie);
+        $salt = HashGenerator::generateSalt();
+        $this->user->setSalt($salt);
+        $this->user->setToken($cookie);
+        $hash = HashGenerator::generateHash($password, $salt);
         $this->user->setHash($hash);
         $em->persist($this->user);
         $em->flush();
         return $this->user;
     }
     
-    static public function saveAnonymousUser($salt, $em) {
+    static public function saveAnonymousUser($salt, $em, $token) {
         $userModel = new User;
         $userModel->setSalt($salt);
+        $userModel->setToken($token);
         $userModel->setLogin('Anonymous');
         $em->persist($userModel);
         $em->flush();

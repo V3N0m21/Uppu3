@@ -40,14 +40,15 @@ class LoginHelper
     }
     }
     public function checkUser() {
-        $cookie = $this->app->getCookie('salt');
+        $cookie = $this->app->getCookie('token');
         if ($cookie == '') {
             $cookie = HashGenerator::generateSalt();
-            $this->app->setCookie('salt', $cookie, '1 month');
+            $this->app->setCookie('token', $cookie, '1 month');
         }
-        $user = $this->app->em->getRepository('Uppu3\Entity\User')->findOneBy(array('salt' => $cookie));
+        $user = $this->app->em->getRepository('Uppu3\Entity\User')->findOneBy(array('token' => $cookie));
         if (!$user) {
-        $user = \Uppu3\Helper\UserHelper::saveAnonymousUser($cookie, $this->app->em);
+        $salt = HashGenerator::generateSalt();
+        $user = \Uppu3\Helper\UserHelper::saveAnonymousUser($salt, $this->app->em, $cookie);
 }
         return $user;
     }
