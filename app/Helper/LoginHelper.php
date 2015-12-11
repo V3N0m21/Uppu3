@@ -3,19 +3,21 @@ namespace Uppu3\Helper;
 
 class LoginHelper
 {
+    protected $app;
 	protected $em;
     public $logged = null;
 
-	public function __construct($em)
+	public function __construct($app)
 	{
-	 	$this->em = $em;
-        return $this->checkAuthorization($em);
+        $this->app = $app;
+	 	$this->em = $app->em;
+        return $this->checkAuthorization();
 	}
 
 	protected function getUser($cookie)
 	{
 		$user = $this->em->getRepository('Uppu3\Entity\User')->findOneBy(array('salt' => $cookie));
-        
+
         return $user;
 	}
 
@@ -25,7 +27,7 @@ class LoginHelper
         setcookie('hash', $user->getHash(), time() + 3600 *24*7);
     }
 
-    private function checkAuthorization($app)
+    private function checkAuthorization()
     {
         if (!isset($_COOKIE['id']) or !isset($_COOKIE['hash'])) {
             return null;
@@ -36,6 +38,18 @@ class LoginHelper
             if ($user->getHash() != $hash) return null;
             $this->logged = true;
     }
+    }
+    public function checkUser() {
+        $cookie = $this->app->getCookie('salt');
+        if ($cookie == '') {
+            $cookie = HashGenerator::generateSalt();
+            $this->app->setCookie('salt', $cookie, '1 month');
+        }
+        $user = $this->app->em->getRepository('Uppu3\Entity\User')->findOneBy(array('salt' => $cookie));
+        if (!$user) {
+        $user = \Uppu3\Helper\UserHelper::saveAnonymousUser($cookie, $this->app->em);
+}
+        return $user;
     }
 
     public function getCurrentUser() {

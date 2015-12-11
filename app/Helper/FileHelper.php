@@ -1,16 +1,24 @@
 <?php
 namespace Uppu3\Helper;
 use Uppu3\Entity\File;
-
+define('MAX_SIZE', 10485760 ); //10485760
 class FileHelper
 {
+
     private $em;
     private $user;
+    public $errors;
 
     function __construct(\Uppu3\Entity\User $user, \Doctrine\ORM\EntityManager $em)
     {
         $this->user = $user;
         $this->em = $em;
+    }
+
+    public function fileValidate($data) {
+        if(($data['load']['size'] >= MAX_SIZE) || ($data['load']['size'] == 0)) {
+            $this->errors[] = 'Файл должен быть до 10мб.';
+        }
     }
 
     public function fileSave($data) {

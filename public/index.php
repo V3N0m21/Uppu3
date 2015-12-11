@@ -15,16 +15,13 @@ $app->container->singleton('em', function () use ($entityManager) {
 });
 
 $app->container->singleton('loginHelper', function () use ($app) {
-    return new LoginHelper($app->em);
+    return new LoginHelper($app);
 });
 
-$app->container->singleton('currentUser', function () use ($app) {
-    $helper = new LoginHelper($app->em);
-    return $helper->getCurrentUser();
-});
+
 $app->view->appendData(array(
     'loginHelper' => $app->loginHelper,
-    'currentUser' => $app->currentUser,
+    'currentUser' => $app->loginHelper->getCurrentUser(),
     'message' => ''
 ));
 
@@ -34,8 +31,6 @@ function checkAuthorization()
     $isLogged = $app->loginHelper;
     if ($isLogged->logged != true) {
         $_SESSION['urlRedirect'] = $app->request->getResourceUri();
-//        $a = $_SESSION['urlRedirect'];
-//        var_dump($a);die();
         $app->redirect('/login');
     }
 }
@@ -48,28 +43,26 @@ $app->map('/', function () use ($app) {
         $app->stop();
     }
     if (file_exists($_FILES['load']['tmp_name']) && $_FILES['load']['error'] == 0) {
-        $cookie = $app->getCookie('salt');
-        if (!$cookie) {
-            $cookie = HashGenerator::generateSalt();
-            $app->setCookie('salt', $cookie, '1 month');
-        }
-        $user = $app->em->getRepository('Uppu3\Entity\User')->findOneBy(array('salt' => $cookie));
-        if (!$user) {
-            $user = \Uppu3\Helper\UserHelper::saveAnonymousUser($cookie, $app->em);
-        }
+        $user = $app->loginHelper->checkUser();
         $fileHelper = new \Uppu3\Helper\FileHelper($user, $app->em);
+        $fileHelper->fileValidate($_FILES);
+        if (empty($fileHelper->errors)) {
         $file = $fileHelper->fileSave($_FILES);
         $id = $file->getId();
         $app->redirect("/view/$id");
+        } else {
+            $message = $fileHelper->errors[0];
+            $app->render('file_load.html', array('page' => $page, 'message' => $message));
+        }
     } else {
-        $message = "You didn't select any file";
+        $message = "Вы не выбрали файл";
         $app->render('file_load.html', array('page' => $page, 'message' => $message));
     }
 })->via('GET', 'POST');
 
 $app->map('/login', function () use ($app) {
 
-
+    $page = 'login';
     if($app->request->isPost()) {
     if ($user = $app->em->getRepository('Uppu3\Entity\User')
         ->findOneBy(array('login' => $app->request->params('login')))
@@ -93,7 +86,7 @@ $app->map('/login', function () use ($app) {
         }
 
     }}
-    $app->render('login_form.html', array('data' => $_POST));
+    $app->render('login_form.html', array('data' => $_POST, 'page' => $page));
 })->via('GET', 'POST')->name('login');
 
 $app->get('/logout', function () use ($app) {
@@ -160,15 +153,13 @@ $app->get('/users/', 'checkAuthorization', function () use ($app) {
     $cookie = $app->getCookie('salt');
     $page = 'users';
     $users = $app->em->getRepository('Uppu3\Entity\User')->findBy([], ['created' => 'DESC']);
-//    $filesCount = $app->em->createQuery('SELECT IDENTITY(u.uploadedBy), count(u.uploadedBy) FROM Uppu3\Entity\File u GROUP BY u.uploadedBy');
-//    $filesCount = $filesCount->getArrayResult();
-//    var_dump($filesCount); die();
-    $filesCount = [];
-    foreach ($users as $user) {
-        $filesCount[$user->getId()] = count($app->em->getRepository('Uppu3\Entity\File')
-            ->findByUploadedBy($user->getId()));
+    $filesCount = $app->em->createQuery('SELECT IDENTITY(u.uploadedBy), count(u.uploadedBy) FROM Uppu3\Entity\File u GROUP BY u.uploadedBy');
+    $filesCount = $filesCount->getArrayResult();
+    $list = [];
+    foreach($filesCount as $count) {
+        $list[$count[1]] = $count[2];
     }
-    $app->render('users.html', array('users' => $users, 'page' => $page, 'cookie' => $cookie, 'filesCount' => $filesCount));
+    $app->render('users.html', array('users' => $users, 'page' => $page, 'cookie' => $cookie, 'filesCount' => $list));
 });
 
 $app->get('/users/:id/', function ($id) use ($app) {
