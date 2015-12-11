@@ -1,27 +1,27 @@
 <?php
 namespace Uppu3\Entity;
+
 use Doctrine\ORM\Mapping as ORM;
 
 /** @ORM\Entity @ORM\Table(name="users") */
-
 class User
 {
-    
+
     /**
-     *@ORM\Id @ORM\Column(type="integer")
-     *@ORM\GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     protected $id;
-    
+
     /** @ORM\Column(type="string") */
     protected $login;
-    
+
     /** @ORM\Column(type="string") */
     protected $email;
-    
+
     /** @ORM\Column(type="datetime") */
     protected $created;
-    
+
     /** @ORM\Column(type="string") */
     protected $salt;
 
@@ -30,64 +30,79 @@ class User
 
     /** @ORM\Column(type="string") */
     protected $hash;
-    
-    public function getId() {
+
+    public function getId()
+    {
         return $this->id;
     }
-    
-    public function getLogin() {
+
+    public function getLogin()
+    {
         return $this->login;
     }
-    
-    public function setLogin($login) {
+
+    public function setLogin($login)
+    {
         $this->login = $login;
     }
-    
-    public function getEmail() {
+
+    public function getEmail()
+    {
         return $this->email;
     }
-    
-    public function setEmail($email) {
+
+    public function setEmail($email)
+    {
         $this->email = $email;
     }
-    
-    public function getCreated() {
+
+    public function getCreated()
+    {
         return $this->created;
     }
-    
-    public function setCreatedNow() {
+
+    public function setCreatedNow()
+    {
         $this->created = new \DateTime("now");
     }
-    
-    public function getPassword() {
+
+    public function getPassword()
+    {
         return $this->password;
     }
-    
-    public function setHash($hash) {
+
+    public function setHash($hash)
+    {
         $this->hash = $hash;
     }
-    
-    public function getHash() {
+
+    public function getHash()
+    {
         return $this->hash;
     }
 
-    public function getSalt() {
+    public function getSalt()
+    {
         return $this->salt;
     }
-    
-    public function setSalt($salt) {
+
+    public function setSalt($salt)
+    {
         $this->salt = $salt;
     }
 
-    public function getToken() {
+    public function getToken()
+    {
         return $this->token;
     }
 
-    public function setToken($token) {
+    public function setToken($token)
+    {
         $this->token = $token;
     }
-    
-    public function __toString() {
+
+    public function __toString()
+    {
         return (string)$this->getId();
     }
 }

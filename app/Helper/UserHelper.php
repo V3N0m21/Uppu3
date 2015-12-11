@@ -1,28 +1,32 @@
 <?php
 namespace Uppu3\Helper;
+
 use Uppu3\Helper\HashGenerator;
 use Uppu3\Entity\User;
 
 class UserHelper
 {
-    
+
 
     private $em;
     public $user;
-    function __construct($data,\Doctrine\ORM\EntityManager $em, $cookie) {
+
+    function __construct($data, \Doctrine\ORM\EntityManager $em, $cookie)
+    {
         $this->em = $em;
         $userResource = $em->getRepository('Uppu3\Entity\User')->findOneBy(array('token' => $cookie));
         if (!$userResource) {
-        $this->user = new User;
+            $this->user = new User;
         } else {
-        $this->user = $userResource;
+            $this->user = $userResource;
         }
         $this->user->setLogin($data['login']);
         $this->user->setEmail($data['email']);
         return $this->user;
     }
 
-    public function userSave($password, $cookie, $em) {
+    public function userSave($password, $cookie, $em)
+    {
         $this->user->setCreatedNow();
         $salt = HashGenerator::generateSalt();
         $this->user->setSalt($salt);
@@ -33,8 +37,9 @@ class UserHelper
         $em->flush();
         return $this->user;
     }
-    
-    static public function saveAnonymousUser($salt, $em, $token) {
+
+    static public function saveAnonymousUser($salt, $em, $token)
+    {
         $userModel = new User;
         $userModel->setSalt($salt);
         $userModel->setToken($token);
@@ -43,5 +48,5 @@ class UserHelper
         $em->flush();
         return $userModel;
     }
-    
+
 }

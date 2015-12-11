@@ -47,9 +47,9 @@ $app->map('/', function () use ($app) {
         $fileHelper = new \Uppu3\Helper\FileHelper($user, $app->em);
         $fileHelper->fileValidate($_FILES);
         if (empty($fileHelper->errors)) {
-        $file = $fileHelper->fileSave($_FILES);
-        $id = $file->getId();
-        $app->redirect("/view/$id");
+            $file = $fileHelper->fileSave($_FILES);
+            $id = $file->getId();
+            $app->redirect("/view/$id");
         } else {
             $message = $fileHelper->errors[0];
             $app->render('file_load.html', array('page' => $page, 'message' => $message));
@@ -63,29 +63,30 @@ $app->map('/', function () use ($app) {
 $app->map('/login', function () use ($app) {
 
     $page = 'login';
-    if($app->request->isPost()) {
-    if ($user = $app->em->getRepository('Uppu3\Entity\User')
-        ->findOneBy(array('login' => $app->request->params('login')))
-    ) {
-        if ($user->getHash() === HashGenerator::generateHash($app->request->params('password'), $user->getSalt())) {
-            $id = $user->getId();
-            $app->loginHelper->authenticateUser($user);
-            if (isset($_SESSION['urlRedirect'])) {
-                $urlRedirect = $_SESSION['urlRedirect'];
-                unset($_SESSION['urlRedirect']);
-            }
-            if (isset($urlRedirect)) {
-             $app->redirect($urlRedirect);
+    if ($app->request->isPost()) {
+        if ($user = $app->em->getRepository('Uppu3\Entity\User')
+            ->findOneBy(array('login' => $app->request->params('login')))
+        ) {
+            if ($user->getHash() === HashGenerator::generateHash($app->request->params('password'), $user->getSalt())) {
+                $id = $user->getId();
+                $app->loginHelper->authenticateUser($user);
+                if (isset($_SESSION['urlRedirect'])) {
+                    $urlRedirect = $_SESSION['urlRedirect'];
+                    unset($_SESSION['urlRedirect']);
+                }
+                if (isset($urlRedirect)) {
+                    $app->redirect($urlRedirect);
+                } else {
+                    $app->redirect("users/$id");
+                }
             } else {
-            $app->redirect("users/$id");
+                $error = "Invalid login or password";
+                $app->render('login_form.html', array('message' => $error, 'data' => $_POST));
+                return;
             }
-        } else {
-            $error = "Invalid login or password";
-            $app->render('login_form.html', array('message' => $error, 'data' => $_POST));
-            return;
-        }
 
-    }}
+        }
+    }
     $app->render('login_form.html', array('data' => $_POST, 'page' => $page));
 })->via('GET', 'POST')->name('login');
 
@@ -107,7 +108,7 @@ $app->map('/register', function () use ($app) {
         $userHelper = new \Uppu3\Helper\UserHelper($_POST, $app->em, $cookie);
         $user = $userHelper->user;
         $validation->validateUser($user, $_POST);
-        if (!$validation->hasErrors()) {
+        if ($validation->hasErrors() == true) {
             $userHelper->userSave($app->request->params('password'), $cookie, $app->em);
             $id = $userHelper->user->getId();
             $app->loginHelper->authenticateUser($userHelper->user);
@@ -156,7 +157,7 @@ $app->get('/users/', 'checkAuthorization', function () use ($app) {
     $filesCount = $app->em->createQuery('SELECT IDENTITY(u.uploadedBy), count(u.uploadedBy) FROM Uppu3\Entity\File u GROUP BY u.uploadedBy');
     $filesCount = $filesCount->getArrayResult();
     $list = [];
-    foreach($filesCount as $count) {
+    foreach ($filesCount as $count) {
         $list[$count[1]] = $count[2];
     }
     $app->render('users.html', array('users' => $users, 'page' => $page, 'cookie' => $cookie, 'filesCount' => $list));
@@ -186,7 +187,7 @@ $app->post('/send/:id', function ($id) use ($app) {
     $comment = $commentHelper->comment;
     $validation->validateComment($comment);
     if (!$validation->hasErrors()) {
-      $commentHelper->commentSave();
+        $commentHelper->commentSave();
     };
     $comments = $app->em->getRepository('Uppu3\Entity\Comment')->findBy(array('fileId' => $id), array('path' => 'ASC'));
     $app->render('comments.html', array('comments' => $comments));

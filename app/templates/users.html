@@ -1,18 +1,22 @@
 {% extends 'layout.html' %}
 {% block content %}
-	<div class="container-fluid">
-		<ul class="list-group">
-			{% for user in users %}
-				{% if user.login != 'Anonymous' %}
-				<li class="list-group-item">
-					
-					<p>Логин: <a href="/users/{{user.id}}/">{{ user.login }}</a></p>
-					<p>e-mail: {{user.email}}</p>
-					<p>Зарегистрирован: {{ user.created|date('d.m.Y h:i') }}</p>
-					<p>Файлов загружено: {% if filesCount[user.id] != '' %}{{ filesCount[user.id] }}{% else %}{{ 0 }}{% endif %}</p>
-				</li>
-				{% endif %}
-			{% endfor %}
-		</ul>
-	</div>
+<div class="container-fluid">
+    <ul class="list-group">
+        {% for user in users %}
+        {% if user.login != 'Anonymous' %}
+        <li class="list-group-item">
+
+            <p>Логин: <a href="/users/{{user.id}}/">{{ user.login }}</a></p>
+
+            <p>e-mail: {{user.email}}</p>
+
+            <p>Зарегистрирован: {{ user.created|date('d.m.Y h:i') }}</p>
+
+            <p>Файлов загружено: {% if filesCount[user.id] != '' %}{{ filesCount[user.id] }}{% else %}{{ 0 }}{% endif
+                %}</p>
+        </li>
+        {% endif %}
+        {% endfor %}
+    </ul>
+</div>
 {% endblock %}
