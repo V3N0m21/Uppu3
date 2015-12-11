@@ -13,6 +13,11 @@ $app->container->singleton('em', function () use ($entityManager) {
 $app->container->singleton('loginHelper', function () use ($app) {
     return new LoginHelper($app);
 });
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 86a419f81c974f49f24d6057ff5052c642df8132
 $app->view->appendData(array(
     'loginHelper' => $app->loginHelper,
     'currentUser' => $app->loginHelper->getCurrentUser(),
@@ -39,9 +44,15 @@ $app->map('/', function () use ($app) {
         $fileHelper = new \Uppu3\Helper\FileHelper($user, $app->em);
         $fileHelper->fileValidate($_FILES);
         if (empty($fileHelper->errors)) {
+<<<<<<< HEAD
             $file = $fileHelper->fileSave($_FILES);
             $id = $file->getId();
             $app->redirect("/view/$id");
+=======
+        $file = $fileHelper->fileSave($_FILES);
+        $id = $file->getId();
+        $app->redirect("/view/$id");
+>>>>>>> 86a419f81c974f49f24d6057ff5052c642df8132
         } else {
             $message = $fileHelper->errors[0];
             $app->render('file_load.html', array('page' => $page, 'message' => $message));
@@ -52,6 +63,7 @@ $app->map('/', function () use ($app) {
     }
 })->via('GET', 'POST');
 $app->map('/login', function () use ($app) {
+<<<<<<< HEAD
     $page = 'login';
     if($app->request->isPost()) {
         if ($user = $app->em->getRepository('Uppu3\Entity\User')
@@ -69,12 +81,37 @@ $app->map('/login', function () use ($app) {
                 } else {
                     $app->redirect("users/$id");
                 }
-            } else {
-                $error = "Invalid login or password";
-                $app->render('login_form.html', array('message' => $error, 'data' => $_POST));
-                return;
+=======
+
+    $page = 'login';
+    if($app->request->isPost()) {
+    if ($user = $app->em->getRepository('Uppu3\Entity\User')
+        ->findOneBy(array('login' => $app->request->params('login')))
+    ) {
+        if ($user->getHash() === HashGenerator::generateHash($app->request->params('password'), $user->getSalt())) {
+            $id = $user->getId();
+            $app->loginHelper->authenticateUser($user);
+            if (isset($_SESSION['urlRedirect'])) {
+                $urlRedirect = $_SESSION['urlRedirect'];
+                unset($_SESSION['urlRedirect']);
             }
+            if (isset($urlRedirect)) {
+             $app->redirect($urlRedirect);
+>>>>>>> 86a419f81c974f49f24d6057ff5052c642df8132
+            } else {
+            $app->redirect("users/$id");
+            }
+<<<<<<< HEAD
         }}
+=======
+        } else {
+            $error = "Invalid login or password";
+            $app->render('login_form.html', array('message' => $error, 'data' => $_POST));
+            return;
+        }
+
+    }}
+>>>>>>> 86a419f81c974f49f24d6057ff5052c642df8132
     $app->render('login_form.html', array('data' => $_POST, 'page' => $page));
 })->via('GET', 'POST')->name('login');
 $app->get('/logout', function () use ($app) {

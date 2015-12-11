@@ -24,7 +24,10 @@ class User
     
     /** @ORM\Column(type="string") */
     protected $salt;
-    
+
+    /** @ORM\Column(type="string") */
+    protected $token;
+
     /** @ORM\Column(type="string") */
     protected $hash;
     
@@ -74,6 +77,14 @@ class User
     
     public function setSalt($salt) {
         $this->salt = $salt;
+    }
+
+    public function getToken() {
+        return $this->token;
+    }
+
+    public function setToken($token) {
+        $this->token = $token;
     }
     
     public function __toString() {
