@@ -1,4 +1,5 @@
 <?php
+session_start();
 require '../vendor/autoload.php';
 require_once '../app/bootstrap.php';
 use Uppu3\Helper\FormatHelper;
@@ -32,7 +33,10 @@ function checkAuthorization()
     $app = \Slim\Slim::getInstance();
     $isLogged = $app->loginHelper;
     if ($isLogged->logged != true) {
-        $app->redirect($app->urlFor('login', array('from' => 'josh')));
+        $_SESSION['urlRedirect'] = $app->request->getResourceUri();
+//        $a = $_SESSION['urlRedirect'];
+//        var_dump($a);die();
+        $app->redirect('/login');
     }
 }
 
@@ -64,28 +68,32 @@ $app->map('/', function () use ($app) {
 })->via('GET', 'POST');
 
 $app->map('/login', function () use ($app) {
-    if ($app->request->isGet()) {
-        $page = 'login';
-        $flash = '';
-        $app->render('login_form.html', array('page' => $page, 'flash' => $flash));
-    } else {
-        if ($user = $app->em->getRepository('Uppu3\Entity\User')
-            ->findOneBy(array('login' => $app->request->params('login')))
-        ) {
-            if ($user->getHash() === HashGenerator::generateHash($app->request->params('password'), $user->getSalt())) {
-                $id = $user->getId();
-                $app->loginHelper->authenticateUser($user);
-                $app->redirect("users/$id");
-            } else {
-                $error = "Invalid login or password";
-                $app->render('login_form.html', array('message' => $error, 'data' => $_POST));
-                return;
-            }
 
+
+    if($app->request->isPost()) {
+    if ($user = $app->em->getRepository('Uppu3\Entity\User')
+        ->findOneBy(array('login' => $app->request->params('login')))
+    ) {
+        if ($user->getHash() === HashGenerator::generateHash($app->request->params('password'), $user->getSalt())) {
+            $id = $user->getId();
+            $app->loginHelper->authenticateUser($user);
+            if (isset($_SESSION['urlRedirect'])) {
+                $urlRedirect = $_SESSION['urlRedirect'];
+                unset($_SESSION['urlRedirect']);
+            }
+            if (isset($urlRedirect)) {
+             $app->redirect($urlRedirect);
+            } else {
+            $app->redirect("users/$id");
+            }
+        } else {
+            $error = "Invalid login or password";
+            $app->render('login_form.html', array('message' => $error, 'data' => $_POST));
+            return;
         }
-        $error = "Invalid login or password";
-        $app->render('login_form.html', array('message' => $error, 'data' => $_POST));
-    }
+
+    }}
+    $app->render('login_form.html', array('data' => $_POST));
 })->via('GET', 'POST')->name('login');
 
 $app->get('/logout', function () use ($app) {
