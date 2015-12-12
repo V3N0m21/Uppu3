@@ -7,10 +7,12 @@
 	<br>
 	<form action="/register" method="post">
 		<label>Логин
-			<input type="text" class="form-control" id="login" name="login" placeholder="Введите имя" required>
+			<input type="text" class="form-control" id="login"
+				   {% if data.login !="" %} value="{{ data.login }}" {% endif %} name="login" placeholder="Введите имя" required>
 		</label><br>
 		<label>e-mail
-			<input type="email" class="form-control" id="email" name="email" placeholder="e-mail" required>
+			<input type="email" class="form-control" id="email"
+				   {% if data.email !="" %} value="{{ data.email }}" {% endif %} name="email" placeholder="e-mail" required>
 		</label><br>
 		<label>Пароль
 			<input type="password" class="form-control" id="password" name="password" placeholder="password" required>

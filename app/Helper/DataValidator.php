@@ -16,7 +16,7 @@ class DataValidator
     }
     
     public function hasErrors() {
-        (!empty($error)) ? true : false;
+       return (!empty($error)) ? true : false;
     }
 
     private function checkComment($comment)
