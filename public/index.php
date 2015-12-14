@@ -108,7 +108,7 @@ $app->map('/register', function () use ($app) {
         $userHelper = new \Uppu3\Helper\UserHelper($_POST, $app->em, $cookie);
         $user = $userHelper->user;
         $validation->validateUser($user, $_POST);
-        if ($validation->hasErrors() == true) {
+        if (empty($validation->error)) {
             $userHelper->userSave($app->request->params('password'), $cookie, $app->em);
             $id = $userHelper->user->getId();
             $app->loginHelper->authenticateUser($userHelper->user);
