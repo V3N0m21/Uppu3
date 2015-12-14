@@ -10,6 +10,10 @@
 					<p>e-mail: {{user.email}}</p>
 					<p>Зарегистрирован: {{ user.created|date('d.m.Y h:i') }}</p>
 					<p>Файлов загружено: {% if filesCount[user.id] != '' %}{{ filesCount[user.id] }}{% else %}{{ 0 }}{% endif %}</p>
+					<form action="/users/{{user.id}}" method="post">
+						<input type="hidden" name="_METHOD" value="DELETE"/>
+						<input type="submit" value="Remove user"/>
+					</form>
 				</li>
 				{% endif %}
 			{% endfor %}

@@ -150,6 +150,11 @@ $app->get('/users/:id/', function ($id) use ($app) {
     $files = $app->em->getRepository('Uppu3\Entity\File')->findByUploadedBy($id);
     $app->render('user.html', array('user' => $user, 'files' => $files, 'helper' => $helper, 'page' => $page));
 });
+$app->delete('/users/:id/', 'checkAuthorization', function ($id) use ($app) {
+    \Uppu3\Helper\UserHelper::userDelete($id, $app->em);
+    $app->redirect('/users');
+});
+
 $app->get('/list', 'checkAuthorization', function () use ($app) {
     $helper = new FormatHelper();
     $page = 'list';

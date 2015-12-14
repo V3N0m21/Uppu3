@@ -43,5 +43,11 @@ class UserHelper
         $em->flush();
         return $userModel;
     }
+
+    static public function userDelete($id, $em) {
+        $user = $em->getRepository('Uppu3\Entity\User')->findOneById($id);
+        $em->remove($user);
+        $em->flush();
+    }
     
 }
