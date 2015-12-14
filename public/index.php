@@ -6,18 +6,25 @@ use Uppu3\Helper\FormatHelper;
 use Uppu3\Helper\CommentHelper;
 use Uppu3\Helper\HashGenerator;
 use Uppu3\Helper\LoginHelper;
+
 $app = new \Slim\Slim(array('view' => new \Slim\Views\Twig(), 'templates.path' => '../app/templates'));
+
 $app->container->singleton('em', function () use ($entityManager) {
+
     return $entityManager;
 });
+
 $app->container->singleton('loginHelper', function () use ($app) {
     return new LoginHelper($app);
 });
+
+
 $app->view->appendData(array(
     'loginHelper' => $app->loginHelper,
     'currentUser' => $app->loginHelper->getCurrentUser(),
     'message' => ''
 ));
+
 function checkAuthorization()
 {
     $app = \Slim\Slim::getInstance();
@@ -27,6 +34,7 @@ function checkAuthorization()
         $app->redirect('/login');
     }
 }
+
 ;
 $app->map('/', function () use ($app) {
     $page = 'index';
@@ -51,9 +59,11 @@ $app->map('/', function () use ($app) {
         $app->render('file_load.html', array('page' => $page, 'message' => $message));
     }
 })->via('GET', 'POST');
+
 $app->map('/login', function () use ($app) {
+
     $page = 'login';
-    if($app->request->isPost()) {
+    if ($app->request->isPost()) {
         if ($user = $app->em->getRepository('Uppu3\Entity\User')
             ->findOneBy(array('login' => $app->request->params('login')))
         ) {
@@ -74,13 +84,17 @@ $app->map('/login', function () use ($app) {
                 $app->render('login_form.html', array('message' => $error, 'data' => $_POST));
                 return;
             }
-        }}
+
+        }
+    }
     $app->render('login_form.html', array('data' => $_POST, 'page' => $page));
 })->via('GET', 'POST')->name('login');
+
 $app->get('/logout', function () use ($app) {
     $app->loginHelper->logout();
     $app->redirect('/');
 });
+
 $app->map('/register', function () use ($app) {
     if ($app->request->isGet()) {
         $app->render('register.html');
@@ -94,8 +108,7 @@ $app->map('/register', function () use ($app) {
         $userHelper = new \Uppu3\Helper\UserHelper($_POST, $app->em, $cookie);
         $user = $userHelper->user;
         $validation->validateUser($user, $_POST);
-
-        if (empty($validation->error)) {
+        if ($validation->hasErrors() == true) {
             $userHelper->userSave($app->request->params('password'), $cookie, $app->em);
             $id = $userHelper->user->getId();
             $app->loginHelper->authenticateUser($userHelper->user);
@@ -105,6 +118,8 @@ $app->map('/register', function () use ($app) {
         };
     }
 })->via('GET', 'POST');
+
+
 $app->get('/view/:id/', function ($id) use ($app) {
     $file = $app->em->find('Uppu3\Entity\File', $id);
     $user = $app->em->getRepository('Uppu3\Entity\User')->findOneById($file->getUploadedBy());
@@ -115,13 +130,16 @@ $app->get('/view/:id/', function ($id) use ($app) {
     $comments = $app->em->getRepository('Uppu3\Entity\Comment')->findBy(array('fileId' => $id), array('path' => 'ASC'));
     $app->render('view.html', array('file' => $file, 'user' => $user, 'helper' => $helper, 'comments' => $comments));
 });
+
 $app->get('/comment/:id/', function ($id) use ($app) {
     $comment = $app->em->find('Uppu3\Entity\Comment', $id);
     echo $comment->getComment();
 });
+
 $app->get('/download/:id/:name', function ($id, $name) use ($app) {
     $file = $app->em->find('Uppu3\Entity\File', $id);
     $name = FormatHelper::formatDownloadFile($id, $file->getName());
+
     if (file_exists($name)) {
         header("X-Sendfile:" . realpath(dirname(__FILE__)) . '/' . $name);
         header("Content-Type: application/octet-stream");
@@ -131,6 +149,7 @@ $app->get('/download/:id/:name', function ($id, $name) use ($app) {
         $app->notFound();
     }
 });
+
 $app->get('/users/', 'checkAuthorization', function () use ($app) {
     $cookie = $app->getCookie('token');
     $page = 'users';
@@ -138,11 +157,12 @@ $app->get('/users/', 'checkAuthorization', function () use ($app) {
     $filesCount = $app->em->createQuery('SELECT IDENTITY(u.uploadedBy), count(u.uploadedBy) FROM Uppu3\Entity\File u GROUP BY u.uploadedBy');
     $filesCount = $filesCount->getArrayResult();
     $list = [];
-    foreach($filesCount as $count) {
+    foreach ($filesCount as $count) {
         $list[$count[1]] = $count[2];
     }
     $app->render('users.html', array('users' => $users, 'page' => $page, 'cookie' => $cookie, 'filesCount' => $list));
 });
+
 $app->get('/users/:id/', function ($id) use ($app) {
     $helper = new FormatHelper();
     $page = 'users';
@@ -150,6 +170,7 @@ $app->get('/users/:id/', function ($id) use ($app) {
     $files = $app->em->getRepository('Uppu3\Entity\File')->findByUploadedBy($id);
     $app->render('user.html', array('user' => $user, 'files' => $files, 'helper' => $helper, 'page' => $page));
 });
+
 $app->delete('/users/:id/', 'checkAuthorization', function ($id) use ($app) {
     \Uppu3\Helper\UserHelper::userDelete($id, $app->em);
     $app->redirect('/users');
@@ -161,6 +182,7 @@ $app->get('/list', 'checkAuthorization', function () use ($app) {
     $files = $app->em->getRepository('Uppu3\Entity\File')->findBy([], ['uploaded' => 'DESC'], 50, 0);
     $app->render('list.html', array('files' => $files, 'page' => $page, 'helper' => $helper));
 });
+
 $app->post('/send/:id', function ($id) use ($app) {
     $parent = isset($_POST['parent']) ? $app->em->find('Uppu3\Entity\Comment', $app->request->params('parent')) : null;
     $file = $app->em->find('Uppu3\Entity\File', $id);
@@ -175,8 +197,11 @@ $app->post('/send/:id', function ($id) use ($app) {
     $comments = $app->em->getRepository('Uppu3\Entity\Comment')->findBy(array('fileId' => $id), array('path' => 'ASC'));
     $app->render('comments.html', array('comments' => $comments));
 });
+
 $app->post('/ajaxComments/:id', function ($id) use ($app) {
     $comments = $app->em->getRepository('Uppu3\Entity\Comment')->findBy(array('fileId' => $id), array('path' => 'ASC'));
     $app->render('comments.html', array('comments' => $comments));
 });
+
+
 $app->run();

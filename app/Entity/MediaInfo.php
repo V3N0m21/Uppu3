@@ -10,8 +10,9 @@ class MediaInfo
     public $playtime;
     public $bitrate;
     public $bits_per_sample;
-    
-    static public function getMediaInfo($fileName) {
+
+    static public function getMediaInfo($fileName)
+    {
         $mediaInfo = new self;
         $id3 = new \getID3();
         $id3->encoding = 'UTF-8';
@@ -39,12 +40,13 @@ class MediaInfo
         }
         return $mediaInfo;
     }
-    
-    static public function setMediaInfo($finfo) {
+
+    static public function setMediaInfo($finfo)
+    {
         $mediaInfo = new self;
-        
+
         if (isset($finfo->resolution_x)) {
-            
+
             $mediaInfo->resolution_x = $finfo->resolution_x;
         }
         if (isset($finfo->resolution_y)) {
@@ -65,7 +67,7 @@ class MediaInfo
         if (isset($finfo->bits_per_sample)) {
             $mediaInfo->bits_per_sample = $finfo->bits_per_sample;
         }
-        
+
         return $mediaInfo;
     }
 }
