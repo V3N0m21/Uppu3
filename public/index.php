@@ -38,26 +38,26 @@ function checkAuthorization()
 ;
 $app->map('/', function () use ($app) {
     $page = 'index';
-    if ($app->request->isGet()) {
-        $app->render('file_load.html', array('page' => $page));
-        $app->stop();
-    }
-    if (file_exists($_FILES['load']['tmp_name']) && UPLOAD_ERR_OK == 0) {
-        $user = $app->loginHelper->checkUserRegistered();
-        $fileHelper = new \Uppu3\Helper\FileHelper($app->em);
-        $fileHelper->fileValidate($_FILES);
-        if (empty($fileHelper->errors)) {
-            $file = $fileHelper->fileSave($_FILES, $user);
-            $id = $file->getId();
-            $app->redirect("/view/$id");
+    $message = '';
+    if ($app->request->isPost()) {
+
+        if (file_exists($_FILES['load']['tmp_name']) && UPLOAD_ERR_OK == 0) {
+            $user = $app->loginHelper->checkUserRegistered();
+            $fileHelper = new \Uppu3\Helper\FileHelper($app->em);
+            $fileHelper->fileValidate($_FILES);
+            if (empty($fileHelper->errors)) {
+                $file = $fileHelper->fileSave($_FILES, $user);
+                $id = $file->getId();
+                $app->redirect("/view/$id");
+            } else {
+                $message = $fileHelper->errors[0];
+
+            }
         } else {
-            $message = $fileHelper->errors[0];
-            $app->render('file_load.html', array('page' => $page, 'message' => $message));
+            $message = "Вы не выбрали файл";
         }
-    } else {
-        $message = "Вы не выбрали файл";
-        $app->render('file_load.html', array('page' => $page, 'message' => $message));
     }
+    $app->render('file_load.html', array('page' => $page, 'message' => $message));
 })->via('GET', 'POST');
 
 $app->map('/login', function () use ($app) {
@@ -176,7 +176,7 @@ $app->delete('/users/:id/', 'checkAuthorization', function ($id) use ($app) {
     \Uppu3\Helper\UserHelper::userDelete($id, $app->em);
     $app->redirect('/users');
 });
-$app->delete('/view/:id/', 'checkAuthorization', function($id) use ($app) {
+$app->delete('/view/:id/', 'checkAuthorization', function ($id) use ($app) {
     $fileHelper = new \Uppu3\Helper\FileHelper($app->em);
     $fileHelper->fileDelete($id);
     $app->redirect('/list');
