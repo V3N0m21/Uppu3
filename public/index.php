@@ -15,7 +15,7 @@ $app->container->singleton('em', function () use ($entityManager) {
 });
 
 $app->container->singleton('loginHelper', function () use ($app) {
-    return new LoginHelper($app);
+    return new LoginHelper($app->em, $app->request->cookies, $app->response->cookies);
 });
 
 
@@ -42,8 +42,8 @@ $app->map('/', function () use ($app) {
         $app->render('file_load.html', array('page' => $page));
         $app->stop();
     }
-    if (file_exists($_FILES['load']['tmp_name']) && $_FILES['load']['error'] == 0) {
-        $user = $app->loginHelper->checkUser();
+    if (file_exists($_FILES['load']['tmp_name']) && UPLOAD_ERR_OK == 0) {
+        $user = $app->loginHelper->checkUserRegistered();
         $fileHelper = new \Uppu3\Helper\FileHelper($app->em);
         $fileHelper->fileValidate($_FILES);
         if (empty($fileHelper->errors)) {
@@ -64,9 +64,11 @@ $app->map('/login', function () use ($app) {
 
     $page = 'login';
     if ($app->request->isPost()) {
+
         if ($user = $app->em->getRepository('Uppu3\Entity\User')
             ->findOneBy(array('login' => $app->request->params('login')))
         ) {
+
             if ($user->getHash() === HashGenerator::generateHash($app->request->params('password'), $user->getSalt())) {
                 $id = $user->getId();
                 $app->loginHelper->authenticateUser($user);
@@ -151,7 +153,6 @@ $app->get('/download/:id/:name', function ($id, $name) use ($app) {
 });
 
 $app->get('/users/', 'checkAuthorization', function () use ($app) {
-    $cookie = $app->getCookie('token');
     $page = 'users';
     $users = $app->em->getRepository('Uppu3\Entity\User')->findBy([], ['created' => 'DESC']);
     $filesCount = $app->em->createQuery('SELECT IDENTITY(u.uploadedBy), count(u.uploadedBy) FROM Uppu3\Entity\File u GROUP BY u.uploadedBy');
@@ -160,7 +161,7 @@ $app->get('/users/', 'checkAuthorization', function () use ($app) {
     foreach ($filesCount as $count) {
         $list[$count[1]] = $count[2];
     }
-    $app->render('users.html', array('users' => $users, 'page' => $page, 'cookie' => $cookie, 'filesCount' => $list));
+    $app->render('users.html', array('users' => $users, 'page' => $page, 'filesCount' => $list));
 });
 
 $app->get('/users/:id/', function ($id) use ($app) {

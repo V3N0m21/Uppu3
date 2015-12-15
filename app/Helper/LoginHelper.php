@@ -3,15 +3,18 @@ namespace Uppu3\Helper;
 
 class LoginHelper
 {
-    protected $app;
+
     protected $em;
+    protected $requestCookies;
+    protected $responseCookies;
     public $logged = null;
 
-    public function __construct($app)
+    public function __construct($em, $requestCookies, $responseCookies)
     {
-        $this->app = $app;
-        $this->em = $app->em;
-        return $this->checkAuthorization();
+        $this->em = $em;
+        $this->requestCookies = $requestCookies;
+        $this->responseCookies = $responseCookies;
+        $this->checkAuthorization();
     }
 
     protected function getUser($cookie)
@@ -23,34 +26,35 @@ class LoginHelper
 
     public function authenticateUser(\Uppu3\Entity\User $user)
     {
-        setcookie('id', $user->getId(), time() + 3600 * 24 * 7);
-        setcookie('hash', $user->getHash(), time() + 3600 * 24 * 7);
+        $this->responseCookies->set('id', $user->getId(), time() + 3600 * 24 * 7);
+        $this->responseCookies->set('hash', $user->getHash(), time() + 3600 * 24 * 7);
     }
 
     private function checkAuthorization()
     {
-        if (!isset($_COOKIE['id']) or !isset($_COOKIE['hash'])) {
+
+        if ($this->requestCookies['id'] == '' || $this->requestCookies == '') {
             return null;
         } else {
-            $id = intval($_COOKIE['id']);
-            $hash = strval($_COOKIE['hash']);
+            $id = intval($this->requestCookies['id']);
+            $hash = strval($this->requestCookies['hash']);
             $user = $this->em->getRepository('Uppu3\Entity\User')->findOneById($id);
             if ($user->getHash() != $hash) return null;
             $this->logged = true;
         }
     }
 
-    public function checkUser()
+    public function checkUserRegistered()
     {
-        $cookie = $this->app->getCookie('token');
+        $cookie = $this->requestCookies['token'];
         if ($cookie == '') {
             $cookie = HashGenerator::generateSalt();
-            $this->app->setCookie('token', $cookie, '1 month');
+            $this->responseCookies->set('token', $cookie, '1 month');
         }
-        $user = $this->app->em->getRepository('Uppu3\Entity\User')->findOneBy(array('token' => $cookie));
+        $user = $this->em->getRepository('Uppu3\Entity\User')->findOneBy(array('token' => $cookie));
         if (!$user) {
             $salt = HashGenerator::generateSalt();
-            $user = \Uppu3\Helper\UserHelper::saveAnonymousUser($salt, $this->app->em, $cookie);
+            $user = \Uppu3\Helper\UserHelper::saveAnonymousUser($salt, $this->em, $cookie);
         }
         return $user;
     }
@@ -58,7 +62,8 @@ class LoginHelper
     public function getCurrentUser()
     {
         if ($this->logged) {
-            $token = $this->app->getCookie('token');
+
+            $token = $this->requestCookies['token'];
             $user = $this->em->getRepository('Uppu3\Entity\User')->findOneByToken($token);
             return $user;
         }
@@ -67,8 +72,8 @@ class LoginHelper
 
     public function logout()
     {
-        setcookie('id', '');
-        setcookie('hash', '');
+        $this->responseCookies->set('id', '');
+        $this->responseCookies->set('hash', '');
     }
 
 }
