@@ -58,8 +58,8 @@ class LoginHelper
     public function getCurrentUser()
     {
         if ($this->logged) {
-            $id = intval($_COOKIE['id']);
-            $user = $this->em->getRepository('Uppu3\Entity\User')->findOneById($id);
+            $token = $this->app->getCookie('token');
+            $user = $this->em->getRepository('Uppu3\Entity\User')->findOneByToken($token);
             return $user;
         }
     }

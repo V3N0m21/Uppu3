@@ -3,30 +3,30 @@ namespace Uppu3\Helper;
 
 use Uppu3\Entity\File;
 
-define('MAX_SIZE', 10485760); //10485760
+
 class FileHelper
 {
 
     private $em;
-    private $user;
+
+    private $maxSize = 10485760;
+    private $pictures = array('image/jpeg', 'image/gif', 'image/png');
     public $errors;
 
-    function __construct(\Uppu3\Entity\User $user, \Doctrine\ORM\EntityManager $em)
+    function __construct(\Doctrine\ORM\EntityManager $em)
     {
-        $this->user = $user;
         $this->em = $em;
     }
 
     public function fileValidate($data)
     {
-        if (($data['load']['size'] >= MAX_SIZE) || ($data['load']['size'] == 0)) {
+        if (($data['load']['size'] >= $this->maxSize) || ($data['load']['size'] == 0)) {
             $this->errors[] = 'Файл должен быть до 10мб.';
         }
     }
 
-    public function fileSave($data)
+    public function fileSave($data, \Uppu3\Entity\User $user)
     {
-        $pictures = array('image/jpeg', 'image/gif', 'image/png');
         $fileResource = new File;
 
 
@@ -44,7 +44,7 @@ class FileHelper
         //$mediainfo = json_encode($mediainfo);
         $fileResource->setMediainfo($mediainfo);
         $fileResource->setUploaded();
-        $fileResource->setUploadedBy($this->user);
+        $fileResource->setUploadedBy($user);
 
         $this->em->persist($fileResource);
         $this->em->flush();
@@ -54,12 +54,25 @@ class FileHelper
         $result = move_uploaded_file($tmpFile, $newFile);
 
 
-        if (in_array($fileResource->getExtension(), $pictures)) {
+        if (in_array($fileResource->getExtension(), $this->pictures)) {
             $path = \Uppu3\Helper\FormatHelper::formatUploadResizeLink($id, $data['load']['name']);
             $resize = new \Uppu3\Helper\Resize;
             $resize->resizeFile($newFile, $path);
         }
 
         return $fileResource;
+    }
+    public function fileDelete($id) {
+        $file = $this->em->getRepository('Uppu3\Entity\File')->findOneById($id);
+        $filePath = \Uppu3\Helper\FormatHelper::formatUploadLink($file->getId(), $file->getName());
+        if (in_array($file->getExtension(), $this->pictures)) {
+            $fileResizePath = \Uppu3\Helper\FormatHelper::formatUploadResizeLink($file->getId(), $file->getName());
+            unlink($fileResizePath);
+        }
+        unlink($filePath);
+        $this->em->remove($file);
+        $this->em->flush();
+        echo "all is done"; die();
+
     }
 }

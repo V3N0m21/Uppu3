@@ -35,8 +35,7 @@ CREATE TABLE IF NOT EXISTS `files` (
   `comment` varchar(255) DEFAULT NULL,
   `extension` varchar(25) NOT NULL,
   `mediainfo` text NOT NULL,
--- id of user who uploaded file
-  `uploadedBy` int(11) NOT NULL,
+  `uploadedBy` int(11) NOT NULL COMMENT 'id of user who uploaded file',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=13 ;
 

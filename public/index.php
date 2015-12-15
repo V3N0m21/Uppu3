@@ -44,10 +44,10 @@ $app->map('/', function () use ($app) {
     }
     if (file_exists($_FILES['load']['tmp_name']) && $_FILES['load']['error'] == 0) {
         $user = $app->loginHelper->checkUser();
-        $fileHelper = new \Uppu3\Helper\FileHelper($user, $app->em);
+        $fileHelper = new \Uppu3\Helper\FileHelper($app->em);
         $fileHelper->fileValidate($_FILES);
         if (empty($fileHelper->errors)) {
-            $file = $fileHelper->fileSave($_FILES);
+            $file = $fileHelper->fileSave($_FILES, $user);
             $id = $file->getId();
             $app->redirect("/view/$id");
         } else {
@@ -174,6 +174,11 @@ $app->get('/users/:id/', function ($id) use ($app) {
 $app->delete('/users/:id/', 'checkAuthorization', function ($id) use ($app) {
     \Uppu3\Helper\UserHelper::userDelete($id, $app->em);
     $app->redirect('/users');
+});
+$app->delete('/view/:id/', 'checkAuthorization', function($id) use ($app) {
+    $fileHelper = new \Uppu3\Helper\FileHelper($app->em);
+    $fileHelper->fileDelete($id);
+    $app->redirect('/list');
 });
 
 $app->get('/list', 'checkAuthorization', function () use ($app) {
